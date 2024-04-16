@@ -11,6 +11,6 @@ ENV JDBC_DATABASE_USERNAME ${JDBC_DATABASE_USERNAME}
 
 WORKDIR /app
 RUN ls -al
-COPY ./hoomgroom-payment-0.0.1-SNAPSHOT.jar /app
+COPY ./subscription-management-service-0.0.1-SNAPSHOT.jar /app
 EXPOSE 8080
-CMD ["java","-jar","hoomgroom-payment-0.0.1-SNAPSHOT.jar"]
+CMD ["java","-jar","subscription-management-service-0.0.1-SNAPSHOT.jar"]
