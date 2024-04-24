@@ -1,18 +1,34 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.controller;
 
+import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
+import id.ac.ui.cs.advprog.subsmanagementservice.service.SubscriptionBoxService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/")
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/subscription-box")
 public class SubscriptionBoxController {
-    @GetMapping("/")
-    @ResponseBody
-    public String addSubsBox() {
-        return "<h1>Hello World</h1>";
+
+    private final SubscriptionBoxService subscriptionService;
+
+    @Autowired
+    public SubscriptionBoxController(SubscriptionBoxService subscriptionService) {
+        this.subscriptionService = subscriptionService;
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<SubscriptionBox>> getAllSubscriptionBoxes() {
+        List<SubscriptionBox> subscriptionBoxes = subscriptionService.findAllSubscriptionBoxes();
+        return ResponseEntity.ok(subscriptionBoxes);
+    }
+
+    @GetMapping("/{boxId}")
+    public ResponseEntity<SubscriptionBox> getSubscriptionBoxDetails(@PathVariable String boxId) {
+        Optional<SubscriptionBox> subscriptionBox = subscriptionService.findSubscriptionBoxById(boxId);
+        return ResponseEntity.ok(subscriptionBox.get());
+    }
 }
