@@ -16,6 +16,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+
+import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundException;
+
 
 class SubscriptionBoxControllerTest {
 
@@ -56,4 +61,23 @@ class SubscriptionBoxControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subscriptionBox, responseEntity.getBody());
     }
+    @Test
+    void subscribeToBox_ShouldFailIfBoxDoesNotExist() {
+        String boxId = "non-existent-id";
+        doThrow(new ResourceNotFoundException("No subscription box found with ID: " + boxId))
+                .when(subscriptionBoxService).subscribeToBox(boxId);
+
+        assertThrows(ResourceNotFoundException.class, () -> subscriptionBoxController.subscribeToBox(boxId));
+    }
+
+    @Test
+    void unsubscribeFromBox_ShouldFailIfBoxDoesNotExist() {
+        String boxId = "non-existent-id";
+        doThrow(new ResourceNotFoundException("No subscription box found with ID: " + boxId))
+                .when(subscriptionBoxService).unsubscribeFromBox(boxId);
+
+        assertThrows(ResourceNotFoundException.class, () -> subscriptionBoxController.unsubscribeFromBox(boxId));
+    }
+
+
 }
