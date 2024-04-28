@@ -33,7 +33,9 @@ class SubscriptionBoxControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        subscriptionBoxController = new SubscriptionBoxController(subscriptionBoxService);
     }
+
 
     @Test
     void getAllSubscriptionBoxes() {
@@ -78,6 +80,4 @@ class SubscriptionBoxControllerTest {
 
         assertThrows(ResourceNotFoundException.class, () -> subscriptionBoxController.unsubscribeFromBox(boxId));
     }
-
-
 }

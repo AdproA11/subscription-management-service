@@ -31,16 +31,15 @@ public class SubscriptionBoxController {
         Optional<SubscriptionBox> subscriptionBox = subscriptionService.findSubscriptionBoxById(boxId);
         return ResponseEntity.ok(subscriptionBox.get());
     }
+    // Example implementation in SubscriptionBoxController
     @PostMapping("/subscribe/{boxId}")
     public ResponseEntity<String> subscribeToBox(@PathVariable String boxId) {
-            //tdd skeleton
+        subscriptionService.subscribeToBox(boxId);
         return ResponseEntity.ok("Subscription successful.");
     }
-
     @PostMapping("/unsubscribe/{boxId}")
     public ResponseEntity<String> unsubscribeFromBox(@PathVariable String boxId) {
-            //tdd skeleton
+        subscriptionService.unsubscribeFromBox(boxId);
         return ResponseEntity.ok("Unsubscription successful.");
     }
-
 }

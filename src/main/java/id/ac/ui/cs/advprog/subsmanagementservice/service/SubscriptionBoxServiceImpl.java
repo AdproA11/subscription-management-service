@@ -32,13 +32,16 @@ public class SubscriptionBoxServiceImpl implements SubscriptionBoxService {
     }
     @Override
     public void subscribeToBox(String boxId) {
-        // tdd skeleton
+        SubscriptionBox box = subscriptionBoxRepository.findById(boxId)
+                .orElseThrow(() -> new ResourceNotFoundException("No subscription box found with ID: " + boxId));
     }
 
     @Override
     public void unsubscribeFromBox(String boxId) {
-        // tdd skeleton
+        SubscriptionBox box = subscriptionBoxRepository.findById(boxId)
+                .orElseThrow(() -> new ResourceNotFoundException("No subscription box found with ID: " + boxId));
     }
+
 
 }
 
