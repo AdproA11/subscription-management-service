@@ -30,5 +30,15 @@ public class SubscriptionBoxServiceImpl implements SubscriptionBoxService {
         }
         return subscriptionBox;
     }
+    @Override
+    public void subscribeToBox(String boxId) {
+        // tdd skeleton
+    }
+
+    @Override
+    public void unsubscribeFromBox(String boxId) {
+        // tdd skeleton
+    }
+
 }
 

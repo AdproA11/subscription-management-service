@@ -10,4 +10,7 @@ public interface SubscriptionBoxService {
     List<SubscriptionBox> findAllSubscriptionBoxes();
 
     Optional<SubscriptionBox> findSubscriptionBoxById(String boxId);
+    void subscribeToBox(String boxId);
+    void unsubscribeFromBox(String boxId);
+
 }

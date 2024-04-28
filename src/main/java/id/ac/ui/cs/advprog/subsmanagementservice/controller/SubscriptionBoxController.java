@@ -31,4 +31,16 @@ public class SubscriptionBoxController {
         Optional<SubscriptionBox> subscriptionBox = subscriptionService.findSubscriptionBoxById(boxId);
         return ResponseEntity.ok(subscriptionBox.get());
     }
+    @PostMapping("/subscribe/{boxId}")
+    public ResponseEntity<String> subscribeToBox(@PathVariable String boxId) {
+            //tdd skeleton
+        return ResponseEntity.ok("Subscription successful.");
+    }
+
+    @PostMapping("/unsubscribe/{boxId}")
+    public ResponseEntity<String> unsubscribeFromBox(@PathVariable String boxId) {
+            //tdd skeleton
+        return ResponseEntity.ok("Unsubscription successful.");
+    }
+
 }
