@@ -1,52 +1,80 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "subscription_box")
+@Table(name = "subscription_boxes")
 public class SubscriptionBox {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
-    @Column(name= "name",nullable = false)
+    @OneToMany(mappedBy = "subscriptionBox", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference // manages the serialization of child references
+    private Set<Item> items = new HashSet<>();
+
+    @Column(name = "name")
     private String name;
 
-    @Column(name= "price",nullable = false)
-    private double price;
+    @Column(name = "description")
+    private String description;
 
-    // tambahin Constructors, getters, and setters
-    // Constructors
+    @Column(name = "price")
+    private Double price;
+
+    // Constructor for convenience
+    public SubscriptionBox(String name, double price, String description) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+    }
+
+    // Default constructor is necessary for JPA
     public SubscriptionBox() {
     }
 
-    public SubscriptionBox(String name, double price) {
-        this.name = name;
-        this.price = price;
+    // Standard getters and setters
+    public Long getId() {
+        return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Set<Item> getItems() {
+        return items;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getId() {
-        return id;
+    public void setItems(Set<Item> items) {
+        this.items = items;
     }
 
     public String getName() {
         return name;
     }
 
-    public double getPrice() {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getPrice() {
         return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }
