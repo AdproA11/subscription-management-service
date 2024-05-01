@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to Box</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function fetchBoxDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const boxId = urlParams.get('boxId');
+
+            fetch(`/api/subscription-boxes/${boxId}`)
+                .then(response => response.json())
+                .then(box => {
+                    document.getElementById('box-name').textContent = `Box Name: ${box.name}`;
+                    document.getElementById('box-price').textContent = `Price: ${box.price}`;
+                    document.getElementById('subscribe-button').onclick = function() { subscribeBox(box.id); };
+                })
+                .catch(error => console.error('Error fetching box details:', error));
+        }
+
+        function subscribeBox(boxId) {
+            document.getElementById('message').textContent = 'Your subscription is waiting for approval by admin.';
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchBoxDetails);
+    </script>
+</head>
+<body>
+<header>
+    <h1>Subscribe to Box</h1>
+</header>
+<main>
+    <div id="subscription-detail">
+        <h2 id="box-name"></h2>
+        <p id="box-price"></p>
+        <button id="subscribe-button">Subscribe</button>
+        <p id="message"></p>
+    </div>
+    <button onclick="window.history.back()">Go Back</button>
+</main>
+</body>
+</html>
