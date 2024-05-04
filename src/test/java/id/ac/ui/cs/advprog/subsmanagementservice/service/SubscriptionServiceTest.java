@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.service;
 
+import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundException;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
@@ -44,7 +46,8 @@ class SubscriptionServiceTest {
 
         List<SubscriptionBox> result = subscriptionService.getAllBoxes();
 
-        assertEquals(0, result.size());
+        assertEquals(subscriptionBoxes.size(), result.size());
+        assertEquals(subscriptionBoxes, result);
     }
 
     @Test
@@ -53,22 +56,30 @@ class SubscriptionServiceTest {
 
         when(boxRepo.findById(boxId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> subscriptionService.findBoxById(boxId));
+        assertThrows(ResourceNotFoundException.class, () -> subscriptionService.findBoxById(boxId));
     }
-
 
     @Test
     void subscribeToBox_Successful() {
         Long boxId = 1L;
         SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
 
+        Subscription newSubscription = new Subscription();
+        newSubscription.setSubscriptionCode("MTH-ABC123");
+        newSubscription.setUserId(1L);
+        newSubscription.setBoxId(boxId);
+        newSubscription.setType("monthly");
+        newSubscription.setStatus("Pending");
+
         when(boxRepo.findById(boxId)).thenReturn(Optional.of(box));
-        when(subRepo.save(new Subscription())).thenReturn(new Subscription());
+        when(subRepo.save(ArgumentMatchers.any(Subscription.class))).thenReturn(newSubscription);
 
         Subscription result = subscriptionService.subscribeToBox(boxId, "monthly", 1L);
 
-        assertEquals("XXX-", result.getSubscriptionCode().substring(0, 4));
+        assertEquals("MTH-ABC123", result.getSubscriptionCode());
     }
+
+
 
     @Test
     void unsubscribe_Successful() {
@@ -81,7 +92,7 @@ class SubscriptionServiceTest {
 
         boolean result = subscriptionService.unsubscribe(subscriptionCode);
 
-        assertEquals(false, result);
+        assertEquals(true, result);
     }
 
     @Test
@@ -92,6 +103,6 @@ class SubscriptionServiceTest {
 
         boolean result = subscriptionService.unsubscribe(subscriptionCode);
 
-        assertEquals(true, result);
+        assertEquals(false, result);
     }
 }

@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.controller;
 
+import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
 import id.ac.ui.cs.advprog.subsmanagementservice.service.SubscriptionService;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,8 +45,8 @@ class SubscriptionControllerTest {
 
         ResponseEntity<List<SubscriptionBox>> responseEntity = subscriptionController.getAllSubscriptionBoxes();
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        assertEquals(new ArrayList<SubscriptionBox>(), responseEntity.getBody());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(subscriptionBoxTests, responseEntity.getBody());
     }
 
     @Test
@@ -57,8 +58,8 @@ class SubscriptionControllerTest {
 
         ResponseEntity<SubscriptionBox> responseEntity = subscriptionController.getSubscriptionBox(boxId);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        assertEquals(new SubscriptionBox(), responseEntity.getBody());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(subscriptionBox, responseEntity.getBody());
     }
 
     @Test
@@ -67,28 +68,27 @@ class SubscriptionControllerTest {
 
         when(subscriptionService.findBoxById(boxId)).thenThrow(new ResourceNotFoundException("Box not found"));
 
-        assertThrows(IllegalArgumentException.class, () -> subscriptionController.getSubscriptionBox(boxId));
+        assertThrows(ResourceNotFoundException.class, () -> subscriptionController.getSubscriptionBox(boxId));
     }
-
 
     @Test
     void subscribeToBox_ShouldFailIfBoxDoesNotExist() {
         Long boxId = 1L;
         doThrow(new ResourceNotFoundException("No subscription box found with ID: " + boxId))
-                .when(subscriptionService).subscribeToBox(boxId, "type", 1L);
+                .when(subscriptionService).subscribeToBox(boxId, "monthly", 1L);
 
-        assertThrows(RuntimeException.class, () -> subscriptionController.subscribe(boxId, Map.of("type", "monthly", "userId", "1")));
+        ResponseEntity<Subscription> responseEntity = subscriptionController.subscribe(boxId, Map.of("type", "monthly", "userId", "1"));
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
     @Test
     void unsubscribeFromBox_ShouldFailIfBoxDoesNotExist() {
         String subscriptionCode = "non-existent-id";
-        doThrow(new ResourceNotFoundException("No subscription found with code: " + subscriptionCode))
-                .when(subscriptionService).unsubscribe(subscriptionCode);
+        when(subscriptionService.unsubscribe(subscriptionCode)).thenReturn(false);
 
         ResponseEntity<String> responseEntity = subscriptionController.unsubscribe(subscriptionCode);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertEquals("Unsubscribe failed: Subscription not found", responseEntity.getBody());
     }
 }

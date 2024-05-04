@@ -2,7 +2,7 @@ package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SemiAnnualSubscriptionTest {
 
@@ -16,7 +16,7 @@ class SemiAnnualSubscriptionTest {
         String code = semiAnnualSubscription.generateSubscriptionCode();
 
         // Assert
-        assertNotEquals("SAA-ABC123", code);
+        assertEquals("SAA-ABC123", code);
     }
 
     @Test
@@ -29,7 +29,7 @@ class SemiAnnualSubscriptionTest {
         String type = semiAnnualSubscription.getType();
 
         // Assert
-        assertNotEquals("Semi-annual", type);
+        assertEquals("Semi-annual", type);
     }
 
     @Test
@@ -42,6 +42,6 @@ class SemiAnnualSubscriptionTest {
         double total = semiAnnualSubscription.calculateTotal(100.0);
 
         // Assert
-        assertNotEquals(80.0, total);
+        assertEquals(80.0, total);
     }
 }

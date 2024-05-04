@@ -2,7 +2,7 @@ package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MonthlySubscriptionTest {
 
@@ -16,7 +16,7 @@ class MonthlySubscriptionTest {
         String code = monthlySubscription.generateSubscriptionCode();
 
         // Assert
-        assertNotEquals("MTH-ABC123", code);
+        assertEquals("MTH-ABC123", code);
     }
 
     @Test
@@ -29,7 +29,7 @@ class MonthlySubscriptionTest {
         String type = monthlySubscription.getType();
 
         // Assert
-        assertNotEquals("Monthly", type);
+        assertEquals("Monthly", type);
     }
 
     @Test
@@ -42,6 +42,6 @@ class MonthlySubscriptionTest {
         double total = monthlySubscription.calculateTotal(100.0);
 
         // Assert
-        assertNotEquals(90.0, total);
+        assertEquals(90.0, total);
     }
 }
