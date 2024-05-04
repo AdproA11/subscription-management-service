@@ -1,19 +1,17 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-@Entity
-public class Subscription {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class SubscriptionDetail {
     private Long id;
     private String subscriptionCode;
     private Long userId;
     private Long boxId;
-    private String status;
+    private String boxName;
     private String type;
+    private String status;
+    private Double total;
 }

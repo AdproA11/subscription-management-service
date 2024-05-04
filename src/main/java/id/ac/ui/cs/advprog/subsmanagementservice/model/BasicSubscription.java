@@ -1,23 +1,22 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
-public class BasicSubscription implements Subscription {
-    private String id;
-    private double price;
+public class BasicSubscription implements SubscriptionType {
+    private String subscriptionCode;
 
-    public BasicSubscription(String id, double price) {
-        this.id = id;
-        this.price = price;
+    public BasicSubscription(String subscriptionCode) {
+        this.subscriptionCode = subscriptionCode;
     }
     @Override
-    public String getId() {
-        return id;
+    public String generateSubscriptionCode() {
+        return subscriptionCode;
     }
     @Override
-    public String getDescription() {
-        return "";
+    public String getType() {
+        return "Basic";
     }
     @Override
-    public double getPrice() {
-        return price;
+    public double calculateTotal(double basePrice) {
+        return basePrice;
     }
 }
+
