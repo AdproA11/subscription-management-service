@@ -66,7 +66,7 @@ class SubscriptionServiceTest {
 
         Subscription newSubscription = new Subscription();
         newSubscription.setSubscriptionCode("MTH-ABC123");
-        newSubscription.setUserId(1L);
+        newSubscription.setOwnerUsername("1");
         newSubscription.setBoxId(boxId);
         newSubscription.setType("monthly");
         newSubscription.setStatus("Pending");
@@ -74,7 +74,7 @@ class SubscriptionServiceTest {
         when(boxRepo.findById(boxId)).thenReturn(Optional.of(box));
         when(subRepo.save(ArgumentMatchers.any(Subscription.class))).thenReturn(newSubscription);
 
-        Subscription result = subscriptionService.subscribeToBox(boxId, "monthly", 1L);
+        Subscription result = subscriptionService.subscribeToBox(boxId, "monthly", "1");
 
         assertEquals("MTH-ABC123", result.getSubscriptionCode());
     }

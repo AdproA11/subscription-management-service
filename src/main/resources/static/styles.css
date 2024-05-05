@@ -1,40 +1,40 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
 }
 
 header {
-    background-color: #f8f8f8;
-    padding: 10px;
+    background-color: #fff;
+    padding: 20px;
     text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-#subscriptionBoxes {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 10px;
+.my-subscription-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
 }
 
-.subscriptionBox {
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.box {
     margin: 10px;
     padding: 20px;
-    width: 300px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
-.subscriptionBox h2 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
+.box:hover {
+    transform: scale(1.05);
 }
 
-.subscriptionBox p {
-    font-size: 1em;
-    line-height: 1.5;
-    margin-bottom: 10px;
-}
-
-.subscriptionBox .price {
-    color: #d00;
-    font-weight: bold;
+.box h3 {
+    margin: 0;
 }

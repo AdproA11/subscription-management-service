@@ -3,42 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscribe to Box</title>
-    <link rel="stylesheet" href="styles.css">
-    <script>
-        function fetchBoxDetails() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const boxId = urlParams.get('boxId');
-
-            fetch(`/api/subscription-boxes/${boxId}`)
-                .then(response => response.json())
-                .then(box => {
-                    document.getElementById('box-name').textContent = `Box Name: ${box.name}`;
-                    document.getElementById('box-price').textContent = `Price: ${box.price}`;
-                    document.getElementById('subscribe-button').onclick = function() { subscribeBox(box.id); };
-                })
-                .catch(error => console.error('Error fetching box details:', error));
-        }
-
-        function subscribeBox(boxId) {
-            document.getElementById('message').textContent = 'Your subscription is waiting for approval by admin.';
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchBoxDetails);
-    </script>
+    <title>Box Details</title>
+    <link rel="stylesheet" href="box-detail.css">
 </head>
 <body>
 <header>
-    <h1>Subscribe to Box</h1>
+    <h1 id="box-name">Box Name</h1>
 </header>
 <main>
-    <div id="subscription-detail">
-        <h2 id="box-name"></h2>
-        <p id="box-price"></p>
-        <button id="subscribe-button">Subscribe</button>
-        <p id="message"></p>
-    </div>
+    <p id="box-description">Description: </p>
+    <p id="box-price">Price: </p>
+    <ul id="item-list"></ul>
+    <select id="subscription-type">
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="semi-annual">Semi-Annual</option>
+    </select>
+    <button id="subscribe-button">Subscribe</button>
+    <button id="my-subscription-button" style="display: none;" onclick="window.location.href='my-subscription.html'">My Subscription</button>
+    <p id="message"></p>
     <button onclick="window.history.back()">Go Back</button>
 </main>
+<script src="box-detail.js"></script>
 </body>
 </html>

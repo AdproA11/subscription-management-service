@@ -75,7 +75,7 @@ class SubscriptionControllerTest {
     void subscribeToBox_ShouldFailIfBoxDoesNotExist() {
         Long boxId = 1L;
         doThrow(new ResourceNotFoundException("No subscription box found with ID: " + boxId))
-                .when(subscriptionService).subscribeToBox(boxId, "monthly", 1L);
+                .when(subscriptionService).subscribeToBox(boxId, "monthly", "1");
 
         ResponseEntity<Subscription> responseEntity = subscriptionController.subscribe(boxId, Map.of("type", "monthly", "userId", "1"));
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
