@@ -8,4 +8,5 @@ import java.util.List;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     Subscription findBySubscriptionCode(String subscriptionCode);
     List<Subscription> findByOwnerUsername(String ownerUsername);
+    List<Subscription> findByStatus(String status);
 }
