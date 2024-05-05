@@ -14,6 +14,16 @@
     <a href="index.html" class="my-subscription-button">Home</a> <!-- Ensure this link points back to the main page -->
 </header>
 <main>
+    <div class="filter-container">
+        <label for="status-filter">Filter Status:</label>
+        <select id="status-filter">
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Subscribed">Subscribed</option>
+        </select>
+        <button id="filter-button">Apply Filter</button>
+    </div>
     <table id="subscription-table">
         <thead>
         <tr>

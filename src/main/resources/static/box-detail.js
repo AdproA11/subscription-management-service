@@ -17,8 +17,8 @@ function fetchBoxDetails() {
         });
 }
 
-function checkUserSubscription(boxId, userId) {
-    fetch(`/api/subscriptions/user-subscriptions?userId=${userId}`)
+function checkUserSubscription(boxId, ownerUsername) {
+    fetch(`/api/subscriptions/user-subscriptions?ownerUsername=${ownerUsername}`)
         .then(handleResponse)
         .then(subscriptions => {
             const activeSubscription = subscriptions.find(sub => sub.boxId === parseInt(boxId) &&
