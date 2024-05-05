@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.subsmanagementservice.service;
 import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundException;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
+import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionDetail;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,8 +80,6 @@ class SubscriptionServiceTest {
         assertEquals("MTH-ABC123", result.getSubscriptionCode());
     }
 
-
-
     @Test
     void unsubscribe_Successful() {
         String subscriptionCode = "MTH-ABC123";
@@ -104,5 +103,41 @@ class SubscriptionServiceTest {
         boolean result = subscriptionService.unsubscribe(subscriptionCode);
 
         assertEquals(false, result);
+    }
+
+    @Test
+    public void testGetSubscriptionByStatusIsValid() {
+        // Mock repository behavior
+        Subscription subscription1 = new Subscription();
+        subscription1.setSubscriptionCode("MTH-ABC123");
+        subscription1.setOwnerUsername("1");
+        subscription1.setBoxId(1L);
+        subscription1.setType("monthly");
+        subscription1.setStatus("Pending");
+        when(subRepo.findByStatus("Pending")).thenReturn(List.of(subscription1));
+
+        SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
+        when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
+
+        List<SubscriptionDetail> result = subscriptionService.getSubscriptionByStatus("Pending");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testGetSubscriptionByStatusIsTrue() {
+        // Mock repository behavior
+        Subscription subscription1 = new Subscription();
+        subscription1.setSubscriptionCode("MTH-ABC123");
+        subscription1.setOwnerUsername("1");
+        subscription1.setBoxId(1L);
+        subscription1.setType("monthly");
+        subscription1.setStatus("Pending");
+        when(subRepo.findByStatus("Pending")).thenReturn(List.of(subscription1));
+
+        SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
+        when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
+
+        List<SubscriptionDetail> result = subscriptionService.getSubscriptionByStatus("Pending");
+        assertEquals("Pending", result.getFirst().getStatus());
     }
 }
