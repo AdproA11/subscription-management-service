@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.subsmanagementservice.controller;
 
 import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
+import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionDetail;
 import id.ac.ui.cs.advprog.subsmanagementservice.service.SubscriptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,5 +91,33 @@ class SubscriptionControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertEquals("Unsubscribe failed: Subscription not found", responseEntity.getBody());
+    }
+
+    @Test
+    public void testGetSubscriptionByStatusIsNoContent() {
+        // Mocking subscriptionService behavior
+        when(subscriptionService.getSubscriptionByStatus("Pending")).thenReturn(new ArrayList<>());
+
+        // Calling the controller method
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("active");
+
+        // Asserting the response
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        assertEquals(0, responseEntity.getBody().size());
+    }
+
+    @Test
+    public void testGetSubscriptionByStatusIsWithContent() {
+        // Mocking subscriptionService behavior
+        List<SubscriptionDetail> subscriptions = new ArrayList<>();
+        subscriptions.add(new SubscriptionDetail(/* add subscription detail here */));
+        when(subscriptionService.getSubscriptionByStatus("active")).thenReturn(subscriptions);
+
+        // Calling the controller method
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("active");
+
+        // Asserting the response
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(subscriptions, responseEntity.getBody());
     }
 }
