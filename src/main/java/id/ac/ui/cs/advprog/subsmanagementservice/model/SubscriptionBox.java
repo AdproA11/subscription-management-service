@@ -1,52 +1,33 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Setter
+@Getter
 @Entity
-@Table(name = "subscription_box")
 public class SubscriptionBox {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
-
-    @Column(name= "name",nullable = false)
+    private Long id;
     private String name;
+    private String description;
+    private Double price;
 
-    @Column(name= "price",nullable = false)
-    private double price;
 
-    // tambahin Constructors, getters, and setters
-    // Constructors
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Item> items = new ArrayList<>();
+
     public SubscriptionBox() {
     }
 
-    public SubscriptionBox(String name, double price) {
+    public SubscriptionBox(String name, String description, double price) {
         this.name = name;
+        this.description = description;
         this.price = price;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
     }
 }

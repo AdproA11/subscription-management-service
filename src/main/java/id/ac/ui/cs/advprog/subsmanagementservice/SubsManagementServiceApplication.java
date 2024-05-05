@@ -9,5 +9,6 @@ public class SubsManagementServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(SubsManagementServiceApplication.class, args);
     }
-
 }
+
+

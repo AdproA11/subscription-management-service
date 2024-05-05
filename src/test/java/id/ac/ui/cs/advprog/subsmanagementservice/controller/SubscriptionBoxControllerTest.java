@@ -1,7 +1,8 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.controller;
 
+import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
-import id.ac.ui.cs.advprog.subsmanagementservice.service.SubscriptionBoxService;
+import id.ac.ui.cs.advprog.subsmanagementservice.service.SubscriptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,18 +13,22 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-class SubscriptionBoxControllerTest {
+import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundException;
+
+class SubscriptionControllerTest {
 
     @Mock
-    private SubscriptionBoxService subscriptionBoxService;
+    private SubscriptionService subscriptionService;
 
     @InjectMocks
-    private SubscriptionBoxController subscriptionBoxController;
+    private SubscriptionController subscriptionController;
 
     @BeforeEach
     void setUp() {
@@ -33,12 +38,12 @@ class SubscriptionBoxControllerTest {
     @Test
     void getAllSubscriptionBoxes() {
         List<SubscriptionBox> subscriptionBoxTests = new ArrayList<>();
-        subscriptionBoxTests.add(new SubscriptionBox("Box1", 10.0));
-        subscriptionBoxTests.add(new SubscriptionBox("Box2", 20.0));
+        subscriptionBoxTests.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0));
+        subscriptionBoxTests.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 20.0));
 
-        when(subscriptionBoxService.findAllSubscriptionBoxes()).thenReturn(subscriptionBoxTests);
+        when(subscriptionService.getAllBoxes()).thenReturn(subscriptionBoxTests);
 
-        ResponseEntity<List<SubscriptionBox>> responseEntity = subscriptionBoxController.getAllSubscriptionBoxes();
+        ResponseEntity<List<SubscriptionBox>> responseEntity = subscriptionController.getAllSubscriptionBoxes();
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subscriptionBoxTests, responseEntity.getBody());
@@ -46,14 +51,44 @@ class SubscriptionBoxControllerTest {
 
     @Test
     void getSubscriptionBoxDetails() {
-        String boxId = "1";
-        SubscriptionBox subscriptionBox = new SubscriptionBox("Box1", 10.0);
+        Long boxId = 1L;
+        SubscriptionBox subscriptionBox = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
 
-        when(subscriptionBoxService.findSubscriptionBoxById(boxId)).thenReturn(Optional.of(subscriptionBox));
+        when(subscriptionService.findBoxById(boxId)).thenReturn(subscriptionBox);
 
-        ResponseEntity<SubscriptionBox> responseEntity = subscriptionBoxController.getSubscriptionBoxDetails(boxId);
+        ResponseEntity<SubscriptionBox> responseEntity = subscriptionController.getSubscriptionBox(boxId);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subscriptionBox, responseEntity.getBody());
+    }
+
+    @Test
+    void getSubscriptionBoxDetails_ResourceNotFoundException() {
+        Long boxId = 1L;
+
+        when(subscriptionService.findBoxById(boxId)).thenThrow(new ResourceNotFoundException("Box not found"));
+
+        assertThrows(ResourceNotFoundException.class, () -> subscriptionController.getSubscriptionBox(boxId));
+    }
+
+    @Test
+    void subscribeToBox_ShouldFailIfBoxDoesNotExist() {
+        Long boxId = 1L;
+        doThrow(new ResourceNotFoundException("No subscription box found with ID: " + boxId))
+                .when(subscriptionService).subscribeToBox(boxId, "monthly", 1L);
+
+        ResponseEntity<Subscription> responseEntity = subscriptionController.subscribe(boxId, Map.of("type", "monthly", "userId", "1"));
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void unsubscribeFromBox_ShouldFailIfBoxDoesNotExist() {
+        String subscriptionCode = "non-existent-id";
+        when(subscriptionService.unsubscribe(subscriptionCode)).thenReturn(false);
+
+        ResponseEntity<String> responseEntity = subscriptionController.unsubscribe(subscriptionCode);
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals("Unsubscribe failed: Subscription not found", responseEntity.getBody());
     }
 }

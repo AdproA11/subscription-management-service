@@ -1,20 +1,14 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.model;
 
-public abstract class SubscriptionDecorator implements Subscription {
-    protected Subscription wrappedSubscription;
-    public SubscriptionDecorator(Subscription subscription) {
-        this.wrappedSubscription = subscription;
+public abstract class SubscriptionDecorator implements SubscriptionType {
+    protected SubscriptionType subscription;
+
+    public SubscriptionDecorator(SubscriptionType subscription) {
+        this.subscription = subscription;
     }
+
     @Override
-    public String getId() {
-        return wrappedSubscription.getId();
-    }
-    @Override
-    public String getDescription() {
-        return wrappedSubscription.getDescription();
-    }
-    @Override
-    public double getPrice() {
-        return wrappedSubscription.getPrice();
+    public String generateSubscriptionCode() {
+        return subscription.generateSubscriptionCode();
     }
 }
