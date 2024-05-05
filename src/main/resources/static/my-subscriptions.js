@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', fetchSubscriptions);
 
 function fetchSubscriptions() {
-    const userId = 1;  // This should be dynamically set according to the logged-in user.
-    fetch(`/api/subscriptions/user-subscriptions?userId=${userId}`)
+    const ownerUsername = "1";  // This should be dynamically set according to the logged-in user.
+    fetch(`/api/subscriptions/user-subscriptions?ownerUsername=${ownerUsername}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
