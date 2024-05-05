@@ -63,4 +63,10 @@ public class SubscriptionController {
         List<SubscriptionDetail> subscriptions = subscriptionService.getUserSubscriptions(ownerUsername);
         return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
     }
+
+    @GetMapping("/user-subscriptions-status")
+    public ResponseEntity<List<SubscriptionDetail>> getSubscriptionByStatus(@RequestParam String status) {
+        List<SubscriptionDetail> subscriptions = subscriptionService.getSubscriptionByStatus(status);
+        return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
+    }
 }
