@@ -1,8 +1,8 @@
-package id.ac.ui.cs.advprog.subsmanagement.component;
+package id.ac.ui.cs.advprog.subsmanagementservice.component;
 
-import id.ac.ui.cs.advprog.subsmanagement.model.Item;
-import id.ac.ui.cs.advprog.subsmanagement.model.SubscriptionBox;
-import id.ac.ui.cs.advprog.subsmanagement.repository.SubscriptionBoxRepository;
+import id.ac.ui.cs.advprog.subsmanagementservice.model.Item;
+import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
+import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
