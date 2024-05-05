@@ -43,7 +43,7 @@ public class SubscriptionController {
     public ResponseEntity<Subscription> subscribe(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
         try {
             String type = requestBody.get("type");
-            Long userId = Long.parseLong(requestBody.get("userId"));
+            String userId = requestBody.get("userId");
             Subscription subscription = subscriptionService.subscribeToBox(id, type, userId);
             return ResponseEntity.ok(subscription);
         } catch (Exception e) {
@@ -59,8 +59,8 @@ public class SubscriptionController {
     }
 
     @GetMapping("/user-subscriptions")
-    public ResponseEntity<List<SubscriptionDetail>> getUserSubscriptions(@RequestParam Long userId) {
-        List<SubscriptionDetail> subscriptions = subscriptionService.getUserSubscriptions(userId);
+    public ResponseEntity<List<SubscriptionDetail>> getUserSubscriptions(@RequestParam String ownerUsername) {
+        List<SubscriptionDetail> subscriptions = subscriptionService.getUserSubscriptions(ownerUsername);
         return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
     }
 }

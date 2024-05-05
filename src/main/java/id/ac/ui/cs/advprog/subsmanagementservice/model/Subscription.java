@@ -12,7 +12,7 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String subscriptionCode;
-    private Long userId;
+    private String ownerUsername;
     private Long boxId;
     private String status;
     private String type;

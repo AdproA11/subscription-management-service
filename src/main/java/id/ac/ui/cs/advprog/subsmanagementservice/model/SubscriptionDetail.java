@@ -8,7 +8,7 @@ import lombok.Setter;
 public class SubscriptionDetail {
     private Long id;
     private String subscriptionCode;
-    private Long userId;
+    private String ownerUsername;
     private Long boxId;
     private String boxName;
     private String type;

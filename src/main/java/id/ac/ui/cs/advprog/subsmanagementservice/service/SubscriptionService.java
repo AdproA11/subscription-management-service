@@ -37,7 +37,7 @@ public class SubscriptionService {
         return boxRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Subscription box not found with id: " + id));
     }
 
-    public Subscription subscribeToBox(Long boxId, String type, Long userId) {
+    public Subscription subscribeToBox(Long boxId, String type, String ownerUsername) {
         SubscriptionType subscription = new BasicSubscription(UUID.randomUUID().toString());
 
         switch (type) {
@@ -59,7 +59,7 @@ public class SubscriptionService {
 
         Subscription newSubscription = new Subscription();
         newSubscription.setSubscriptionCode(subscriptionCode);
-        newSubscription.setUserId(userId);
+        newSubscription.setOwnerUsername(ownerUsername);
         newSubscription.setBoxId(boxId);
         newSubscription.setType(type);
         newSubscription.setStatus("Pending");
@@ -80,14 +80,14 @@ public class SubscriptionService {
         }
         return false;
     }
-    public List<SubscriptionDetail> getUserSubscriptions(Long userId) {
-        List<Subscription> subscriptions = subRepo.findByUserId(userId);
+    public List<SubscriptionDetail> getUserSubscriptions(String ownerUsername) {
+        List<Subscription> subscriptions = subRepo.findByOwnerUsername(ownerUsername);
         return subscriptions.stream().map(subscription -> {
             SubscriptionBox box = boxRepo.findById(subscription.getBoxId()).orElseThrow();
             SubscriptionDetail detail = new SubscriptionDetail();
             detail.setId(subscription.getId());
             detail.setSubscriptionCode(subscription.getSubscriptionCode());
-            detail.setUserId(subscription.getUserId());
+            detail.setOwnerUsername(subscription.getOwnerUsername());
             detail.setBoxId(subscription.getBoxId());
             detail.setBoxName(box.getName());
             detail.setType(subscription.getType());
