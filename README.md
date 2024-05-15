@@ -1,4 +1,4 @@
-![03FC1ABD-F406-4DA9-9E55-26BDE4188C66_1_201_a](https://github.com/AdproA11/subscription-management-service/assets/52792716/7750529e-0f90-47bf-842a-8f811e3b6947)### User Subscriptions Management Service
+### User Subscriptions Management Service
 ##### Author:
 1. Muh. Kemal lathif Galih Putra (2206081225)
 2. Agastya Kenzo Nayandra - 2006535905
