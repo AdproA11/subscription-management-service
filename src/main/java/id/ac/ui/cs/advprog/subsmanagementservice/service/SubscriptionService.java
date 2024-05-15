@@ -5,7 +5,11 @@ import id.ac.ui.cs.advprog.subsmanagementservice.model.*;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,15 +22,31 @@ public class SubscriptionService {
     private SubscriptionBoxRepository boxRepo;
     @Autowired
     private SubscriptionRepository subRepo;
+    @Autowired
+    private RestTemplate restTemplate;
 
     public List<SubscriptionBox> getAllBoxes() {
-        return boxRepo.findAll();
+        String url = "http://item-management-service/api/box/all"; //fetch boxes from box-item-services
+        ResponseEntity<List<SubscriptionBox>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        List<SubscriptionBox> boxes = response.getBody();
+        if (boxes != null) {
+            boxRepo.saveAll(boxes);
+        }
+        return boxes;
     }
 
     public List<SubscriptionBox> findAllBoxes(Double minPrice, Double maxPrice, String keywords) {
         if (minPrice != null && maxPrice != null) {
             return boxRepo.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice);
         } else if (keywords != null) {
+            System.out.println(keywords);
+            System.out.println(boxRepo.findByNameContaining(keywords));
             return boxRepo.findByNameContaining(keywords);
         } else {
             return boxRepo.findAll();

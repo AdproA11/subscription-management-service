@@ -18,9 +18,4 @@ public class Item {
 
     public Item() {
     }
-
-    public Item(String name) {
-        this.name = name;
-    }
-
 }
