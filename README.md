@@ -41,6 +41,6 @@ metrics yang digunakan adalah:
 Screenshot:
 ![03FC1ABD-F406-4DA9-9E55-26BDE4188C66_1_201_a](https://github.com/AdproA11/subscription-management-service/assets/52792716/fb898f0f-e595-414f-b93a-0eb7c3cc5b62)
 
-Improvement:
-Untuk sekarang belum banyak yang dapat disimpulkan terkait dengan peningkatan performance, rencana kedepan-nya akan dilakukan simulasi dengan Apache JMeter
-agar dapat menampilkan lebih banyak insights terkait dengan perfromance dari service yang kita kerjakan dan peningkatan-peningkatan selanjutnya yang perlu dilakukan.
+Profilling:
+Untuk sekarang belum banyak yang dapat disimpulkan terkait dengan peningkatan performance karena belum dilakukan profilling, rencana kedepan-nya akan dilakukan profiling dengan 
+VisualVM agar dapat menampilkan lebih banyak insights terkait dengan perfromance dari service yang kita kerjakan dan peningkatan-peningkatan selanjutnya yang dapat dilakukan.
