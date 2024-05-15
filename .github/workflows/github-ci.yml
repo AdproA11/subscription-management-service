@@ -2,8 +2,7 @@ name: Java CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   build:
