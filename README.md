@@ -1,4 +1,4 @@
-### User Subscriptions Management Service
+![03FC1ABD-F406-4DA9-9E55-26BDE4188C66_1_201_a](https://github.com/AdproA11/subscription-management-service/assets/52792716/7750529e-0f90-47bf-842a-8f811e3b6947)### User Subscriptions Management Service
 ##### Author:
 1. Muh. Kemal lathif Galih Putra (2206081225)
 2. Agastya Kenzo Nayandra - 2006535905
@@ -27,3 +27,20 @@ saya akan menggunakan Restful API untuk mengimplementasikan service ini. Seperti
 
 Saya juga akan menggunakan restful api utuk melakukan filtering dalam mendapatkan riwayat subs box dan mengacc permintaan langganan subs box yang ada.
 Terima kasih.
+
+#### Monitoring (Lokal)
+Monitoring dilakukan dengan Prometheus untuk scrapping data dan Grafana untuk menampilkan data dari Service kami.
+
+metrics yang digunakan adalah:
+- CPU Usage: Menampilkan penggunaan CPU
+- JVM Thread Count: Menampikan Jumlah Thread yang sedang berjalan
+- HTTP Request Duration: Menampilkan waktu rata-rata waktu yang dibutuhkan untuk memproses HTTP Request
+- HTTP Request Error: Menampilkan jumlah error yang terjadi pada HTTP Request
+
+
+Screenshot:
+![03FC1ABD-F406-4DA9-9E55-26BDE4188C66_1_201_a](https://github.com/AdproA11/subscription-management-service/assets/52792716/fb898f0f-e595-414f-b93a-0eb7c3cc5b62)
+
+Improvement:
+Untuk sekarang belum banyak yang dapat disimpulkan terkait dengan peningkatan performance, rencana kedepan-nya akan dilakukan simulasi dengan Apache JMeter
+agar dapat menampilkan lebih banyak insights terkait dengan perfromance dari service yang kita kerjakan dan peningkatan-peningkatan selanjutnya yang perlu dilakukan.
