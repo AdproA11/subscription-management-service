@@ -22,8 +22,8 @@ public class SubscriptionService {
     private SubscriptionBoxRepository boxRepo;
     @Autowired
     private SubscriptionRepository subRepo;
-    @Autowired
-    private RestTemplate restTemplate;
+//    @Autowired
+//    private RestTemplate restTemplate;
 
     public List<SubscriptionBox> getAllBoxes() {
         return boxRepo.findAll();
