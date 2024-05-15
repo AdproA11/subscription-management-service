@@ -26,19 +26,7 @@ public class SubscriptionService {
     private RestTemplate restTemplate;
 
     public List<SubscriptionBox> getAllBoxes() {
-        String url = "http://item-management-service/api/box/all"; //fetch boxes from box-item-services
-        ResponseEntity<List<SubscriptionBox>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<>() {}
-        );
-
-        List<SubscriptionBox> boxes = response.getBody();
-        if (boxes != null) {
-            boxRepo.saveAll(boxes);
-        }
-        return boxes;
+        return boxRepo.findAll();
     }
 
     public List<SubscriptionBox> findAllBoxes(Double minPrice, Double maxPrice, String keywords) {
