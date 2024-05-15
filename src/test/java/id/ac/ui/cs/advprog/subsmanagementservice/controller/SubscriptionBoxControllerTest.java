@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -95,26 +94,33 @@ class SubscriptionControllerTest {
 
     @Test
     public void testGetSubscriptionByStatusIsNoContent() {
-        // Mocking subscriptionService behavior
-        when(subscriptionService.getSubscriptionByStatus("Pending")).thenReturn(new ArrayList<>());
+        // Set up: Mocking subscriptionService behavior for 'active' status
+        when(subscriptionService.getSubscriptionByStatus("Subscribed")).thenReturn(new ArrayList<>());
 
-        // Calling the controller method
-        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("active");
+        // Execution: Calling the controller method with 'active' status
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("Subscribed");
 
-        // Asserting the response
+        // Assertion: Asserting the response is HttpStatus.NO_CONTENT and the body is empty
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        assertEquals(0, responseEntity.getBody().size());
+        assertNull(responseEntity.getBody());
     }
 
     @Test
     public void testGetSubscriptionByStatusIsWithContent() {
         // Mocking subscriptionService behavior
+        SubscriptionDetail subscription1 = new SubscriptionDetail();
+        subscription1.setSubscriptionCode("MTH-ABC123");
+        subscription1.setOwnerUsername("1");
+        subscription1.setBoxId(1L);
+        subscription1.setType("monthly");
+        subscription1.setStatus("Subscribed");
+
         List<SubscriptionDetail> subscriptions = new ArrayList<>();
-        subscriptions.add(new SubscriptionDetail(/* add subscription detail here */));
-        when(subscriptionService.getSubscriptionByStatus("active")).thenReturn(subscriptions);
+        subscriptions.add(subscription1);
+        when(subscriptionService.getSubscriptionByStatus("Subscribed")).thenReturn(subscriptions);
 
         // Calling the controller method
-        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("active");
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("Subscribed");
 
         // Asserting the response
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
