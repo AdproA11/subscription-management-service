@@ -1,7 +1,7 @@
 plugins {
     java
     jacoco
-    id("org.springframework.boot") version "3.1.4"
+    id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
 }
 
@@ -10,6 +10,12 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
 }
 
 repositories {
@@ -25,7 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("javax.persistence:javax.persistence-api:2.2")
 //    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+//    implementation("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
@@ -36,11 +42,11 @@ dependencies {
     testImplementation("com.h2database:h2")
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-    }
-}
+//dependencyManagement {
+//    imports {
+//        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+//    }
+//}
 
 tasks.register<Test>("unitTest") {
     description = "Runs unit tests."

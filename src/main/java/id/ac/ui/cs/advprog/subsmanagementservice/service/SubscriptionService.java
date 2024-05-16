@@ -5,11 +5,11 @@ import id.ac.ui.cs.advprog.subsmanagementservice.model.*;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
+//import org.springframework.core.ParameterizedTypeReference;
+//import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+//import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
