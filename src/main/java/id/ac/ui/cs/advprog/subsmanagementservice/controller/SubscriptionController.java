@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/subscriptions")
@@ -18,10 +19,10 @@ public class SubscriptionController {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<SubscriptionBox>> getAllSubscriptionBoxes() {
-        List<SubscriptionBox> boxes = subscriptionService.getAllBoxes();
-        return ResponseEntity.ok(boxes);
+    @GetMapping("/all-async")
+    public CompletableFuture<ResponseEntity<List<SubscriptionBox>>> getAllSubscriptionBoxesAsync() {
+        return subscriptionService.getAllBoxesAsync()
+                .thenApply(ResponseEntity::ok);
     }
 
     @GetMapping
