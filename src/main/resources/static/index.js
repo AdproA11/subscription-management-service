@@ -12,7 +12,7 @@ function fetchAllBoxes() {
         .then(data => {
             const container = document.getElementById('box-list');
             container.innerHTML = ''; // Clear previous results
-            if (data.length === 0) {
+            if(data.length === 0) {
                 container.innerHTML = '<p>No boxes available that match your criteria.</p>';
             } else {
                 data.forEach(box => {

@@ -19,7 +19,7 @@ public class SubscriptionController {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @GetMapping("/all-async")
+    @GetMapping("/all")
     public CompletableFuture<ResponseEntity<List<SubscriptionBox>>> getAllSubscriptionBoxesAsync() {
         return subscriptionService.getAllBoxesAsync()
                 .thenApply(ResponseEntity::ok);

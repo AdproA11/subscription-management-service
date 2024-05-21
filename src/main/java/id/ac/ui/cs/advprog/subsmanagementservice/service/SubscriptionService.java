@@ -29,32 +29,38 @@ public class SubscriptionService {
 
     @Async
     public CompletableFuture<List<SubscriptionBox>> getAllBoxesAsync() {
-        String url = "http://localhost:8081/api/box/all";
-        ResponseEntity<List<SubscriptionBox>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<>() {}
-        );
+        return CompletableFuture.supplyAsync(() -> {
+            String url = "http://localhost:8081/api/box/all";
+            ResponseEntity<List<SubscriptionBox>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<>() {}
+            );
 
-        List<SubscriptionBox> boxes = response.getBody();
-        if (boxes != null) {
-            boxRepo.saveAll(boxes);
-        }
-        return CompletableFuture.completedFuture(boxes);
+            List<SubscriptionBox> boxes = response.getBody();
+            if (boxes != null) {
+                boxRepo.saveAll(boxes);
+            }
+            return boxes;
+        });
     }
 
     public List<SubscriptionBox> findAllBoxes(Double minPrice, Double maxPrice, String keywords) {
-        if (minPrice != null && maxPrice != null) {
+        if (minPrice != null && maxPrice != null && keywords != null) {
+            return boxRepo.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice)
+                    .stream()
+                    .filter(box -> box.getName().contains(keywords))
+                    .collect(Collectors.toList());
+        } else if (minPrice != null && maxPrice != null) {
             return boxRepo.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice);
         } else if (keywords != null) {
-            System.out.println(keywords);
-            System.out.println(boxRepo.findByNameContaining(keywords));
             return boxRepo.findByNameContaining(keywords);
         } else {
             return boxRepo.findAll();
         }
     }
+
 
     public SubscriptionBox findBoxById(Long id) throws ResourceNotFoundException {
         return boxRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Subscription box not found with id: " + id));
