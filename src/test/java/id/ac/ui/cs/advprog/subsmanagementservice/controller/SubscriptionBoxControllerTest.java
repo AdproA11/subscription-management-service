@@ -97,12 +97,16 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void testGetSubscriptionByStatusIsNoContent() {
-        // Set up: Mocking subscriptionService behavior for 'active' status
-        when(subscriptionService.getSubscriptionByStatus("Subscribed")).thenReturn(new ArrayList<>());
+    public void testGetSubscriptionByStatusIsNoContent() throws Exception {
+        // Set up: Mocking subscriptionService behavior for 'Subscribed' status
+        when(subscriptionService.getSubscriptionByStatusAsync("Subscribed"))
+                .thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
 
-        // Execution: Calling the controller method with 'active' status
-        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("Subscribed");
+        // Execution: Calling the controller method with 'Subscribed' status
+        CompletableFuture<ResponseEntity<List<SubscriptionDetail>>> responseFuture = subscriptionController.getSubscriptionByStatus("Subscribed");
+
+        // Wait for the future to complete and get the response entity
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = responseFuture.get();
 
         // Assertion: Asserting the response is HttpStatus.NO_CONTENT and the body is empty
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -110,21 +114,25 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void testGetSubscriptionByStatusIsWithContent() {
+    public void testGetSubscriptionByStatusIsWithContent() throws Exception {
         // Mocking subscriptionService behavior
         SubscriptionDetail subscription1 = new SubscriptionDetail();
         subscription1.setSubscriptionCode("MTH-ABC123");
-        subscription1.setOwnerUsername("1");
+        subscription1.setOwnerUsername("user1");
         subscription1.setBoxId(1L);
         subscription1.setType("monthly");
         subscription1.setStatus("Subscribed");
 
         List<SubscriptionDetail> subscriptions = new ArrayList<>();
         subscriptions.add(subscription1);
-        when(subscriptionService.getSubscriptionByStatus("Subscribed")).thenReturn(subscriptions);
+        when(subscriptionService.getSubscriptionByStatusAsync("Subscribed"))
+                .thenReturn(CompletableFuture.completedFuture(subscriptions));
 
         // Calling the controller method
-        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionByStatus("Subscribed");
+        CompletableFuture<ResponseEntity<List<SubscriptionDetail>>> responseFuture = subscriptionController.getSubscriptionByStatus("Subscribed");
+
+        // Wait for the future to complete and get the response entity
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = responseFuture.get();
 
         // Asserting the response
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
