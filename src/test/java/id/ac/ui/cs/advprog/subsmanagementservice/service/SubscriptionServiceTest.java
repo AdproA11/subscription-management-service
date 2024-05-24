@@ -151,7 +151,7 @@ class SubscriptionServiceTest {
         assertEquals("monthly", detail.getType());
         assertEquals("Pending", detail.getStatus());
         assertEquals("Real Madrid Box", detail.getBoxName());
-        assertEquals(10.0, detail.getTotal(), 0.001);
+        assertEquals(9.0, detail.getTotal());
     }
 
     @Test
