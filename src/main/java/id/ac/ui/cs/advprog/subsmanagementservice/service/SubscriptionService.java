@@ -143,39 +143,47 @@ public class SubscriptionService {
 
         }).collect(Collectors.toList());
     }
+    @Async
+    public CompletableFuture<List<SubscriptionDetail>> getSubscriptionByStatusAsync(String status) {
+        return CompletableFuture.supplyAsync(() -> subRepo.findByStatus(status))
+                .thenCompose(subscriptions -> {
+                    List<CompletableFuture<SubscriptionDetail>> futures = subscriptions.stream()
+                            .map(subscription -> CompletableFuture.supplyAsync(() -> {
+                                SubscriptionBox box = boxRepo.findById(subscription.getBoxId())
+                                        .orElseThrow();
+                                SubscriptionDetail detail = new SubscriptionDetail();
+                                detail.setId(subscription.getId());
+                                detail.setSubscriptionCode(subscription.getSubscriptionCode());
+                                detail.setOwnerUsername(subscription.getOwnerUsername());
+                                detail.setBoxId(subscription.getBoxId());
+                                detail.setBoxName(box.getName());
+                                detail.setType(subscription.getType());
+                                detail.setStatus(subscription.getStatus());
 
-    public List<SubscriptionDetail> getSubscriptionByStatus(String status) {
-        List<Subscription> subscriptions = subRepo.findByStatus(status);
-        return subscriptions.stream().map(subscription -> {
-            SubscriptionBox box = boxRepo.findById(subscription.getBoxId()).orElseThrow();
-            SubscriptionDetail detail = new SubscriptionDetail();
-            detail.setId(subscription.getId());
-            detail.setSubscriptionCode(subscription.getSubscriptionCode());
-            detail.setOwnerUsername(subscription.getOwnerUsername());
-            detail.setBoxId(subscription.getBoxId());
-            detail.setBoxName(box.getName());
-            detail.setType(subscription.getType());
-            detail.setStatus(subscription.getStatus());
+                                // Apply diskon dari Tpe subscription
+                                SubscriptionType subscriptionType;
+                                switch (subscription.getType().toLowerCase()) {
+                                    case "monthly":
+                                        subscriptionType = new MonthlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
+                                        break;
+                                    case "quarterly":
+                                        subscriptionType = new QuarterlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
+                                        break;
+                                    case "semi-annual":
+                                        subscriptionType = new SemiAnnualSubscription(new BasicSubscription(subscription.getSubscriptionCode()));
+                                        break;
+                                    default:
+                                        subscriptionType = new BasicSubscription(subscription.getSubscriptionCode());
+                                }
+                                detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
 
-            // Apply diskon dari Tpe subscription
-            SubscriptionType subscriptionType;
-            switch (subscription.getType().toLowerCase()) {
-                case "monthly":
-                    subscriptionType = new MonthlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                case "quarterly":
-                    subscriptionType = new QuarterlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                case "semi-annual":
-                    subscriptionType = new SemiAnnualSubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                default:
-                    subscriptionType = new BasicSubscription(subscription.getSubscriptionCode());
-            }
-            detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
+                                return detail;
+                            })).collect(Collectors.toList());
 
-            return detail;
-
-        }).collect(Collectors.toList());
+                    return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                            .thenApply(v -> futures.stream()
+                                    .map(CompletableFuture::join)
+                                    .collect(Collectors.toList()));
+                });
     }
 }
