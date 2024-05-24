@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
+import java.util.concurrent.CompletableFuture;
 
 import java.util.List;
 import java.util.Optional;
@@ -122,7 +123,7 @@ class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetSubscriptionByStatusIsValid() {
+    public void testGetSubscriptionByStatusIsValid() throws Exception {
         // Mock repository behavior
         Subscription subscription1 = new Subscription();
         subscription1.setSubscriptionCode("MTH-ABC123");
@@ -135,12 +136,26 @@ class SubscriptionServiceTest {
         SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
         when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
 
-        List<SubscriptionDetail> result = subscriptionService.getSubscriptionByStatus("Pending");
+        // Call the asynchronous service method
+        CompletableFuture<List<SubscriptionDetail>> resultFuture = subscriptionService.getSubscriptionByStatusAsync("Pending");
+
+        // Wait for the future to complete and get the result
+        List<SubscriptionDetail> result = resultFuture.get();
+
+        // Assert the result
         assertEquals(1, result.size());
+        SubscriptionDetail detail = result.get(0);
+        assertEquals("MTH-ABC123", detail.getSubscriptionCode());
+        assertEquals("1", detail.getOwnerUsername());
+        assertEquals(1L, detail.getBoxId());
+        assertEquals("monthly", detail.getType());
+        assertEquals("Pending", detail.getStatus());
+        assertEquals("Real Madrid Box", detail.getBoxName());
+        assertEquals(10.0, detail.getTotal(), 0.001);
     }
 
     @Test
-    public void testGetSubscriptionByStatusIsTrue() {
+    public void testGetSubscriptionByStatusIsTrue() throws Exception {
         // Mock repository behavior
         Subscription subscription1 = new Subscription();
         subscription1.setSubscriptionCode("MTH-ABC123");
@@ -153,7 +168,13 @@ class SubscriptionServiceTest {
         SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
         when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
 
-        List<SubscriptionDetail> result = subscriptionService.getSubscriptionByStatus("Pending");
-        assertEquals("Pending", result.getFirst().getStatus());
+        // Call the asynchronous service method
+        CompletableFuture<List<SubscriptionDetail>> resultFuture = subscriptionService.getSubscriptionByStatusAsync("Pending");
+
+        // Wait for the future to complete and get the result
+        List<SubscriptionDetail> result = resultFuture.get();
+
+        // Assert the status of the first result
+        assertEquals("Pending", result.get(0).getStatus());
     }
 }
