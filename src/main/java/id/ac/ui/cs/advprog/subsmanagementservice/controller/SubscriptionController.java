@@ -66,8 +66,10 @@ public class SubscriptionController {
     }
 
     @GetMapping("/user-subscriptions-status")
-    public ResponseEntity<List<SubscriptionDetail>> getSubscriptionByStatus(@RequestParam String status) {
-        List<SubscriptionDetail> subscriptions = subscriptionService.getSubscriptionByStatus(status);
-        return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
+    public CompletableFuture<ResponseEntity<List<SubscriptionDetail>>> getSubscriptionByStatus(@RequestParam String status) {
+        return subscriptionService.getSubscriptionByStatusAsync(status)
+                .thenApply(subscriptions -> subscriptions.isEmpty()
+                        ? ResponseEntity.noContent().build()
+                        : ResponseEntity.ok(subscriptions));
     }
 }
