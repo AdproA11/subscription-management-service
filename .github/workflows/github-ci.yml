@@ -117,10 +117,20 @@ jobs:
       - name: update permission
         run: chmod 400 ssh-key.pem
 
+      - name: Create env file
+        run: |
+          cat << EOF > .env
+          REGISTRY_USER=${{ secrets.REGISTRY_USER }}
+          IMAGE_NAME=${{ secrets.IMAGE_NAME }}
+          IMAGE_TAG=${{ secrets.IMAGE_TAG }}
+          CONTAINER_NAME=${{ secrets.CONTAINER_NAME }}
+          EOF
+
       - name: Deploy to GCP
         run: |
+          scp -o StrictHostKeyChecking=no -i ssh-key.pem -r ./.env ./docker-compose.yml ./monitoring ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }}:~/
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }} "
-            cd $(basename ${{ github.event.repository.url }}) &&
-            sudo docker-compose down &&
-            sudo docker-compose pull &&
-            sudo docker-compose up -d"
+            sudo docker container stop ${{ secrets.CONTAINER_NAME }} || true;
+            sudo docker container rm -f ${{ secrets.CONTAINER_NAME }} || true;
+            sudo docker image rm -f ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }} || true;
+            cd ~/ && sudo docker-compose down && sudo docker-compose pull && sudo docker-compose up -d"
