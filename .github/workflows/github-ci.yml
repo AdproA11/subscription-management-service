@@ -130,6 +130,8 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -i ssh-key.pem -r ./.env ./docker-compose.yml ./monitoring ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }}:~/
           ssh -o StrictHostKeyChecking=no -i ssh-key.pem ${{ secrets.GCP_USERNAME }}@${{ secrets.GCP_STATIC_IP }} "
+            sudo apt-get update;
+            sudo apt-get install -y docker-compose;
             sudo docker container stop ${{ secrets.CONTAINER_NAME }} || true;
             sudo docker container rm -f ${{ secrets.CONTAINER_NAME }} || true;
             sudo docker image rm -f ${{ secrets.REGISTRY_USER }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }} || true;
