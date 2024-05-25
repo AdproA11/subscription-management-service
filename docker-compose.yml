@@ -1,9 +1,9 @@
-version: '3.7'
+version: '3.8'
 
 services:
   subsbox:
-    image: kenzonaayandra/subscription-management:latest
-    container_name: subscription_management_service
+    image: ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: ${CONTAINER_NAME}
     ports:
       - "80:8080"
     environment:
@@ -24,7 +24,7 @@ services:
     image: grafana/grafana:9.5.2
     container_name: grafana
     ports:
-      - "3100:3000"
+      - "3000:3000"
     restart: unless-stopped
     volumes:
       - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
