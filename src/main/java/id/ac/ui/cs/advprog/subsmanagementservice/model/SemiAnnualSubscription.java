@@ -17,6 +17,6 @@ public class SemiAnnualSubscription extends SubscriptionDecorator {
 
     @Override
     public double calculateTotal(double basePrice) {
-        return basePrice * 0.80;  // Diskon 20%
+        return basePrice * 0.80;  // Discount 20%
     }
 }

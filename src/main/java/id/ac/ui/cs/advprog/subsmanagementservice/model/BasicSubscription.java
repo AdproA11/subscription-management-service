@@ -6,17 +6,19 @@ public class BasicSubscription implements SubscriptionType {
     public BasicSubscription(String subscriptionCode) {
         this.subscriptionCode = subscriptionCode;
     }
+
     @Override
     public String generateSubscriptionCode() {
         return subscriptionCode;
     }
+
     @Override
     public String getType() {
         return "Basic";
     }
+
     @Override
     public double calculateTotal(double basePrice) {
         return basePrice;
     }
 }
-

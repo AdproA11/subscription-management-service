@@ -11,4 +11,14 @@ public abstract class SubscriptionDecorator implements SubscriptionType {
     public String generateSubscriptionCode() {
         return subscription.generateSubscriptionCode();
     }
+
+    @Override
+    public String getType() {
+        return subscription.getType();
+    }
+
+    @Override
+    public double calculateTotal(double basePrice) {
+        return subscription.calculateTotal(basePrice);
+    }
 }

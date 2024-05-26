@@ -17,6 +17,6 @@ public class QuarterlySubscription extends SubscriptionDecorator {
 
     @Override
     public double calculateTotal(double basePrice) {
-        return basePrice * 0.85;  // Diskon 15%
+        return basePrice * 0.85;  // Discount 15%
     }
 }
