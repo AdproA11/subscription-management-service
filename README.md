@@ -161,8 +161,114 @@ http_server_requests_seconds_max{error="none",exception="none",method="GET",outc
 http_server_requests_seconds_max{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/api/subscriptions/all",} 0.275689292
 ```
 
-#### Kesimpulan profiling
+#### Kesimpulan profiling pertama
 - Dari ketiga percobaan, sepertinya operasi getAll() secara asynchronus dengan memanfaatkan CompletableFuture lebih cepat 1,5 hingga 4 kali lebih cepat dibandingkan dengan operasi getAll() yang dilakukan secara synchronous
 - Sepertinya hal ini terjadi karena dengan mengimplementasi CompletableFuture secara asynchronous, operasi untuk I/O ke API/database akan dilakukan pada thread yang berbeda dan main thread yang tadi hanya digunakan khusus untuk melakukan pemanggilan http request.
 - Hal ini tentunya akan lebih cepat dan efisien dibanding dengan pemanggilan getAll() biasa secara synchronous contohnya yang dimana main thread akan menghandle http request dan menghandle proses I/O ke API/database secara bersamaan, sehingga main thread akan diblokir hingga operasi I/O selesai terlebih dahulu.
 
+#### Profiling kedua:
+Profilling dilakukan dengan memanfaatkan Prometheus untuk mendapatkan logs dan metrics dari service kami.
+
+Disini kami mencoba untuk melakukan improvement pada fungsi findByStatus() pada SubscriptionService untuk mendatkan Box dengan status tertentu (dalam kasus uji coba ini
+adalah status Pending (3 subscription) dari yang sudah di buat user)
+
+Disini kami melakukan komparasi dengan membuat dua fungsi untuk findByStatus().
+- Di fungsi pertama, findByStatus() dilakukan secara synchronous
+- Di fungsi kedua, findByStatus() dilakukan secara asynchronous dengan memanfaatkan CompletableFuture dari java
+- Kami berharap dengan implementasi findByStatus() secara asynchronous, akan terdapat peningkatan speed up saat service kami mencoba untuk 
+menampilkan subscription dengan status tertentu yang telah dibuat oleh user.
+
+#### Kode pada service & controller
+Controller:
+```
+@GetMapping("/user-subscriptions-status")
+    public CompletableFuture<ResponseEntity<List<SubscriptionDetail>>> getSubscriptionByStatus(@RequestParam String status) {
+        return subscriptionService.getSubscriptionByStatusAsync(status)
+                .thenApply(subscriptions -> subscriptions.isEmpty()
+                        ? ResponseEntity.noContent().build()
+                        : ResponseEntity.ok(subscriptions));
+    }
+@GetMapping("/user-subscriptions-status")
+    public ResponseEntity<List<SubscriptionDetail>> getSubscriptionByStatus(@RequestParam String status) {
+        List<SubscriptionDetail> subscriptions = subscriptionService.getSubscriptionByStatus(status);
+        return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
+    }
+```
+Service:
+```
+@Async
+    public CompletableFuture<List<SubscriptionDetail>> getSubscriptionByStatusAsync(String status) {
+        return CompletableFuture.supplyAsync(() -> subRepo.findByStatus(status))
+                .thenCompose(subscriptions -> {
+                    List<CompletableFuture<SubscriptionDetail>> futures = subscriptions.stream()
+                            .map(subscription -> CompletableFuture.supplyAsync(() -> mapSubscriptionToDetail(subscription)))
+                            .collect(Collectors.toList());
+
+                    return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                            .thenApply(v -> futures.stream()
+                                    .map(CompletableFuture::join)
+                                    .collect(Collectors.toList()));
+                });
+    }
+    
+public List<SubscriptionDetail> getSubscriptionByStatus(String status) {
+        List<Subscription> subscriptions = subRepo.findByStatus(status);
+        return subscriptions.stream().map(subscription -> {
+            SubscriptionBox box = boxRepo.findById(subscription.getBoxId()).orElseThrow();
+            SubscriptionDetail detail = new SubscriptionDetail();
+            detail.setId(subscription.getId());
+            detail.setSubscriptionCode(subscription.getSubscriptionCode());
+            detail.setOwnerUsername(subscription.getOwnerUsername());
+            detail.setBoxId(subscription.getBoxId());
+            detail.setBoxName(box.getName());
+            detail.setType(subscription.getType());
+            detail.setStatus(subscription.getStatus());
+
+            // Apply diskon dari Tpe subscription
+            SubscriptionType subscriptionType;
+            switch (subscription.getType().toLowerCase()) {
+                case "monthly":
+                    subscriptionType = new MonthlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
+                    break;
+                case "quarterly":
+                    subscriptionType = new QuarterlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
+                    break;
+                case "semi-annual":
+                    subscriptionType = new SemiAnnualSubscription(new BasicSubscription(subscription.getSubscriptionCode()));
+                    break;
+                default:
+                    subscriptionType = new BasicSubscription(subscription.getSubscriptionCode());
+            }
+            detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
+
+            return detail;
+
+        }).collect(Collectors.toList());
+    }
+```
+#### Hasil profiling kedua
+- First Attemp
+
+Async:
+![async-1.jpg](img%2Fasync-1.jpg)
+Sync:
+![sync-1.jpg](img%2Fsync-1.jpg)
+
+- Second Attemp
+
+Async
+![async-2.jpg](img%2Fasync-2.jpg)
+Sync:
+![sync-2.jpg](img%2Fsync-2.jpg)
+
+- Third Attemp
+
+Async:
+![async-3.jpg](img%2Fasync-3.jpg)
+Sync:
+![sync-3.jpg](img%2Fsync-3.jpg)
+
+#### Kesimpulan Profiling Kedua
+Dari hasil uji coba ketiga diatas dapat dilihat bahwa untuk mendapatkan subscription base on status yang dipilih oleh user
+penggunaan profiling dengan async CompleateFutureTable menjadi lebih baik sepersekian detik untuk menampilkan subscriptionnya kepada user.
+Hal ini dikarenakan dengan async CompleateFutureTable pemanggilan thread nya menjadi lebih cepat dan secara langsung diluar dari main thread sehingga dapat lebih cepat.
