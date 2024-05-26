@@ -42,42 +42,6 @@ class SubscriptionServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // sementara comment dulu ampe udah konek sama service box-item management
-/*    @Test
-    void getAllBoxesAsync() throws Exception {
-        List<SubscriptionBox> subscriptionBoxes = new ArrayList<>();
-        subscriptionBoxes.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0));
-        subscriptionBoxes.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 20.0));
-
-        String url = "http://localhost:8081/api/box/all";
-        ResponseEntity<List<SubscriptionBox>> responseEntity = ResponseEntity.ok(subscriptionBoxes);
-
-        when(restTemplate.exchange(
-                eq(url),
-                eq(HttpMethod.GET),
-                isNull(),
-                any(ParameterizedTypeReference.class))
-        ).thenReturn(responseEntity);
-
-        CompletableFuture<List<SubscriptionBox>> futureResult = subscriptionService.getAllBoxesAsync();
-        List<SubscriptionBox> result = futureResult.get(); // blocking call to get the result for consistency
-
-
-        assertEquals(subscriptionBoxes.size(), result.size());
-        assertEquals(subscriptionBoxes, result);
-
-        verify(boxRepo, times(1)).saveAll(subscriptionBoxes);
-    }*/
-
-    @Test
-    void findBoxById_ResourceNotFoundException() {
-        Long boxId = 1L;
-
-        when(boxRepo.findById(boxId)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> subscriptionService.findBoxById(boxId));
-    }
-
     @Test
     void subscribeToBox_Successful() {
         Long boxId = 1L;

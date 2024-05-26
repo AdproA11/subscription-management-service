@@ -27,45 +27,6 @@ public class SubscriptionService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Async
-    public CompletableFuture<List<SubscriptionBox>> getAllBoxesAsync() {
-        return CompletableFuture.supplyAsync(() -> {
-            String url = "http://localhost:8081/api/box/all";
-            ResponseEntity<List<SubscriptionBox>> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<>() {}
-            );
-
-            List<SubscriptionBox> boxes = response.getBody();
-            if (boxes != null) {
-                boxRepo.saveAll(boxes);
-            }
-            return boxes;
-        });
-    }
-
-    public List<SubscriptionBox> findAllBoxes(Double minPrice, Double maxPrice, String keywords) {
-        if (minPrice != null && maxPrice != null && keywords != null) {
-            return boxRepo.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice)
-                    .stream()
-                    .filter(box -> box.getName().contains(keywords))
-                    .collect(Collectors.toList());
-        } else if (minPrice != null && maxPrice != null) {
-            return boxRepo.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice);
-        } else if (keywords != null) {
-            return boxRepo.findByNameContaining(keywords);
-        } else {
-            return boxRepo.findAll();
-        }
-    }
-
-
-    public SubscriptionBox findBoxById(Long id) throws ResourceNotFoundException {
-        return boxRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Subscription box not found with id: " + id));
-    }
-
     public Subscription subscribeToBox(Long boxId, String type, String ownerUsername) {
         SubscriptionType subscription = new BasicSubscription(UUID.randomUUID().toString());
 
