@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundExcepti
 import id.ac.ui.cs.advprog.subsmanagementservice.model.*;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionRepository;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -19,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
-public class SubscriptionService {
+public class SubscriptionService implements SubscriptionServiceInterface {
     @Autowired
     private SubscriptionBoxRepository boxRepo;
     @Autowired
@@ -28,22 +29,7 @@ public class SubscriptionService {
     private RestTemplate restTemplate;
 
     public Subscription subscribeToBox(Long boxId, String type, String ownerUsername) {
-        SubscriptionType subscription = new BasicSubscription(UUID.randomUUID().toString());
-
-        switch (type) {
-            case "monthly":
-                subscription = new MonthlySubscription(subscription);
-                type = "monthly";
-                break;
-            case "quarterly":
-                subscription = new QuarterlySubscription(subscription);
-                type = "quarterly";
-                break;
-            case "semi-annual":
-                subscription = new SemiAnnualSubscription(subscription);
-                type = "semi-annual";
-                break;
-        }
+        SubscriptionType subscription = createSubscriptionType(type, UUID.randomUUID().toString());
 
         String subscriptionCode = subscription.generateSubscriptionCode();
 
@@ -61,86 +47,21 @@ public class SubscriptionService {
     }
 
     public boolean unsubscribe(String subscriptionCode) {
-        Optional<Subscription> subscription = Optional.ofNullable(subRepo.findBySubscriptionCode(subscriptionCode));
-        if (subscription.isPresent()) {
-            Subscription sub = subscription.get();
-            sub.setStatus("Cancelled");
-            subRepo.save(sub);
-            return true;
-        }
-        return false;
+        return updateSubscriptionStatus(subscriptionCode, "Cancelled");
     }
 
     public List<SubscriptionDetail> getUserSubscriptions(String ownerUsername) {
         List<Subscription> subscriptions = subRepo.findByOwnerUsername(ownerUsername);
-        return subscriptions.stream().map(subscription -> {
-            SubscriptionBox box = boxRepo.findById(subscription.getBoxId()).orElseThrow();
-            SubscriptionDetail detail = new SubscriptionDetail();
-            detail.setId(subscription.getId());
-            detail.setSubscriptionCode(subscription.getSubscriptionCode());
-            detail.setOwnerUsername(subscription.getOwnerUsername());
-            detail.setBoxId(subscription.getBoxId());
-            detail.setBoxName(box.getName());
-            detail.setType(subscription.getType());
-            detail.setStatus(subscription.getStatus());
-
-            // Apply diskon dari Tpe subscription
-            SubscriptionType subscriptionType;
-            switch (subscription.getType().toLowerCase()) {
-                case "monthly":
-                    subscriptionType = new MonthlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                case "quarterly":
-                    subscriptionType = new QuarterlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                case "semi-annual":
-                    subscriptionType = new SemiAnnualSubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                default:
-                    subscriptionType = new BasicSubscription(subscription.getSubscriptionCode());
-            }
-            detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
-
-            return detail;
-
-        }).collect(Collectors.toList());
+        return mapSubscriptionsToDetails(subscriptions);
     }
+
     @Async
     public CompletableFuture<List<SubscriptionDetail>> getSubscriptionByStatusAsync(String status) {
         return CompletableFuture.supplyAsync(() -> subRepo.findByStatus(status))
                 .thenCompose(subscriptions -> {
                     List<CompletableFuture<SubscriptionDetail>> futures = subscriptions.stream()
-                            .map(subscription -> CompletableFuture.supplyAsync(() -> {
-                                SubscriptionBox box = boxRepo.findById(subscription.getBoxId())
-                                        .orElseThrow();
-                                SubscriptionDetail detail = new SubscriptionDetail();
-                                detail.setId(subscription.getId());
-                                detail.setSubscriptionCode(subscription.getSubscriptionCode());
-                                detail.setOwnerUsername(subscription.getOwnerUsername());
-                                detail.setBoxId(subscription.getBoxId());
-                                detail.setBoxName(box.getName());
-                                detail.setType(subscription.getType());
-                                detail.setStatus(subscription.getStatus());
-
-                                // Apply diskon dari Tpe subscription
-                                SubscriptionType subscriptionType;
-                                switch (subscription.getType().toLowerCase()) {
-                                    case "monthly":
-                                        subscriptionType = new MonthlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                                        break;
-                                    case "quarterly":
-                                        subscriptionType = new QuarterlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                                        break;
-                                    case "semi-annual":
-                                        subscriptionType = new SemiAnnualSubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                                        break;
-                                    default:
-                                        subscriptionType = new BasicSubscription(subscription.getSubscriptionCode());
-                                }
-                                detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
-
-                                return detail;
-                            })).collect(Collectors.toList());
+                            .map(subscription -> CompletableFuture.supplyAsync(() -> mapSubscriptionToDetail(subscription)))
+                            .collect(Collectors.toList());
 
                     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                             .thenApply(v -> futures.stream()
@@ -148,49 +69,61 @@ public class SubscriptionService {
                                     .collect(Collectors.toList()));
                 });
     }
+
     public List<SubscriptionDetail> getPendingSubscription() {
         List<Subscription> subscriptions = subRepo.findByStatus("Pending");
-        return subscriptions.stream().map(subscription -> {
-            SubscriptionBox box = boxRepo.findById(subscription.getBoxId()).orElseThrow();
-            SubscriptionDetail detail = new SubscriptionDetail();
-            detail.setId(subscription.getId());
-            detail.setSubscriptionCode(subscription.getSubscriptionCode());
-            detail.setOwnerUsername(subscription.getOwnerUsername());
-            detail.setBoxId(subscription.getBoxId());
-            detail.setBoxName(box.getName());
-            detail.setType(subscription.getType());
-            detail.setStatus(subscription.getStatus());
-
-            // Apply diskon dari Tpe subscription
-            SubscriptionType subscriptionType;
-            switch (subscription.getType().toLowerCase()) {
-                case "monthly":
-                    subscriptionType = new MonthlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                case "quarterly":
-                    subscriptionType = new QuarterlySubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                case "semi-annual":
-                    subscriptionType = new SemiAnnualSubscription(new BasicSubscription(subscription.getSubscriptionCode()));
-                    break;
-                default:
-                    subscriptionType = new BasicSubscription(subscription.getSubscriptionCode());
-            }
-            detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
-
-            return detail;
-
-        }).collect(Collectors.toList());
+        return mapSubscriptionsToDetails(subscriptions);
     }
 
     public boolean acceptsubcribed(String subscriptionCode) {
+        return updateSubscriptionStatus(subscriptionCode, "Subscribed");
+    }
+
+    public SubscriptionType createSubscriptionType(String type, String baseCode) {
+        SubscriptionType subscription = new BasicSubscription(baseCode);
+        switch (type.toLowerCase()) {
+            case "monthly":
+                subscription = new MonthlySubscription(subscription);
+                break;
+            case "quarterly":
+                subscription = new QuarterlySubscription(subscription);
+                break;
+            case "semi-annual":
+                subscription = new SemiAnnualSubscription(subscription);
+                break;
+        }
+        return subscription;
+    }
+
+    public boolean updateSubscriptionStatus(String subscriptionCode, String status) {
         Optional<Subscription> subscription = Optional.ofNullable(subRepo.findBySubscriptionCode(subscriptionCode));
         if (subscription.isPresent()) {
             Subscription sub = subscription.get();
-            sub.setStatus("Subscribed");
+            sub.setStatus(status);
             subRepo.save(sub);
             return true;
         }
         return false;
+    }
+
+    public List<SubscriptionDetail> mapSubscriptionsToDetails(List<Subscription> subscriptions) {
+        return subscriptions.stream().map(this::mapSubscriptionToDetail).collect(Collectors.toList());
+    }
+
+    public SubscriptionDetail mapSubscriptionToDetail(Subscription subscription) {
+        SubscriptionBox box = boxRepo.findById(subscription.getBoxId()).orElseThrow();
+        SubscriptionDetail detail = new SubscriptionDetail();
+        detail.setId(subscription.getId());
+        detail.setSubscriptionCode(subscription.getSubscriptionCode());
+        detail.setOwnerUsername(subscription.getOwnerUsername());
+        detail.setBoxId(subscription.getBoxId());
+        detail.setBoxName(box.getName());
+        detail.setType(subscription.getType());
+        detail.setStatus(subscription.getStatus());
+
+        SubscriptionType subscriptionType = createSubscriptionType(subscription.getType(), subscription.getSubscriptionCode());
+        detail.setTotal(subscriptionType.calculateTotal(box.getPrice()));
+
+        return detail;
     }
 }
