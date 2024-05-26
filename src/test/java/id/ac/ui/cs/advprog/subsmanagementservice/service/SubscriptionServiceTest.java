@@ -209,4 +209,29 @@ class SubscriptionServiceTest {
         verify(subRepo, times(1)).findByStatus("Pending");
         verify(boxRepo, times(1)).findById(1L);
     }
+
+    @Test
+    void acceptSubscriptionSuccessful() {
+        String subscriptionCode = "MTH-ABC123";
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionCode(subscriptionCode);
+        subscription.setStatus("Pending");
+
+        when(subRepo.findBySubscriptionCode(subscriptionCode)).thenReturn(subscription);
+
+        boolean result = subscriptionService.acceptsubcribed(subscriptionCode);
+
+        assertEquals(true, result);
+    }
+
+    @Test
+    void acceptSubscriptionFailure() {
+        String subscriptionCode = "NON_EXISTENT";
+
+        when(subRepo.findBySubscriptionCode(subscriptionCode)).thenReturn(null);
+
+        boolean result = subscriptionService.acceptsubcribed(subscriptionCode);
+
+        assertEquals(false, result);
+    }
 }
