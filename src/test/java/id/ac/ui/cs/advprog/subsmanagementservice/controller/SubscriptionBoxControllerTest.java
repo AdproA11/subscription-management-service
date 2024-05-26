@@ -138,4 +138,39 @@ class SubscriptionControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subscriptions, responseEntity.getBody());
     }
+
+    @Test
+    public void testGetSubscriptionPendingIsNoContent() {
+        // Set up: Mocking subscriptionService behavior for 'active' status
+        when(subscriptionService.getPendingSubscription()).thenReturn(new ArrayList<>());
+
+        // Execution: Calling the controller method with 'active' status
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionPending();
+
+        // Assertion: Asserting the response is HttpStatus.NO_CONTENT and the body is empty
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    public void testGetSubscriptionPendingIsWithContent() {
+        // Mocking subscriptionService behavior
+        SubscriptionDetail subscription1 = new SubscriptionDetail();
+        subscription1.setSubscriptionCode("MTH-ABC123");
+        subscription1.setOwnerUsername("1");
+        subscription1.setBoxId(1L);
+        subscription1.setType("monthly");
+        subscription1.setStatus("Pending");
+
+        List<SubscriptionDetail> subscriptions = new ArrayList<>();
+        subscriptions.add(subscription1);
+        when(subscriptionService.getPendingSubscription()).thenReturn(subscriptions);
+
+        // Calling the controller method
+        ResponseEntity<List<SubscriptionDetail>> responseEntity = subscriptionController.getSubscriptionPending();
+
+        // Asserting the response
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(subscriptions, responseEntity.getBody());
+    }
 }
