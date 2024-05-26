@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     filterButton.addEventListener('click', function() {
         fetchSubscriptionsStatus(); // Panggil fungsi fetchSubscriptionsStatus saat tombol ditekan
     });
+
+    var pendingSubscriptionButton = document.getElementById('pending-subscription-button'); // New button
+    pendingSubscriptionButton.addEventListener('click', function() {
+        fetchPendingSubscriptions();
+    });
+
 });
 
 function fetchSubscriptions() {
@@ -66,6 +72,51 @@ function fetchSubscriptionsStatus() {
             cell.colSpan = 6;
             cell.style.textAlign = 'center';
         });
+}
+
+function fetchPendingSubscriptions() {
+    fetch('/api/subscriptions/user-subscriptions-pending')
+        .then(response => response.json())
+        .then(subscriptions => populatePendingSubscriptionTable(subscriptions))
+        .catch(error => showError('No pending subscriptions found'));
+}
+
+function acceptSubscription(code) {
+    fetch(`/api/subscriptions/accept-subscription?subscriptionCode=${code}`, {
+        method: 'POST'
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('Subscription accepted successfully');
+                fetchPendingSubscriptions();
+            } else {
+                alert('Failed to accept subscription');
+            }
+        })
+        .catch(error => alert('Failed to accept subscription'));
+}
+
+function populatePendingSubscriptionTable(subscriptions) {
+    const tbody = document.querySelector('#subscription-table tbody');
+    tbody.innerHTML = '';
+    if (subscriptions.length > 0) {
+        subscriptions.forEach(sub => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${sub.boxName}</td>
+                <td>${sub.type}</td>
+                <td>${sub.subscriptionCode}</td>
+                <td>${sub.status}</td>
+                <td>$${sub.total.toFixed(2)}</td>
+                <td><button class="green-button" onclick="acceptSubscription('${sub.subscriptionCode}')">Accept Subscription</button></td>
+            `;
+        });
+    }
+}
+
+function showError(message) {
+    const tbody = document.querySelector('#subscription-table tbody');
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">${message}</td></tr>`;
 }
 
 function cancelSubscription(code) {
