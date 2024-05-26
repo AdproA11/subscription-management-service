@@ -221,4 +221,15 @@ public class SubscriptionService {
 
         }).collect(Collectors.toList());
     }
+
+    public boolean acceptsubcribed(String subscriptionCode) {
+        Optional<Subscription> subscription = Optional.ofNullable(subRepo.findBySubscriptionCode(subscriptionCode));
+        if (subscription.isPresent()) {
+            Subscription sub = subscription.get();
+            sub.setStatus("Subscribed");
+            subRepo.save(sub);
+            return true;
+        }
+        return false;
+    }
 }
