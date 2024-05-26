@@ -19,27 +19,6 @@ public class SubscriptionController {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @GetMapping("/all")
-    public CompletableFuture<ResponseEntity<List<SubscriptionBox>>> getAllSubscriptionBoxesAsync() {
-        return subscriptionService.getAllBoxesAsync()
-                .thenApply(ResponseEntity::ok);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<SubscriptionBox>> getFilteredSubscriptions(
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String keywords) {
-        List<SubscriptionBox> boxes = subscriptionService.findAllBoxes(minPrice, maxPrice, keywords);
-        return new ResponseEntity<>(boxes, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionBox> getSubscriptionBox(@PathVariable Long id) {
-        SubscriptionBox box = subscriptionService.findBoxById(id);
-        return box != null ? ResponseEntity.ok(box) : ResponseEntity.notFound().build();
-    }
-
     @PostMapping("/{id}/subscribe")
     public ResponseEntity<Subscription> subscribe(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
         try {
