@@ -77,4 +77,12 @@ public class SubscriptionController {
         List<SubscriptionDetail> subscriptions = subscriptionService.getPendingSubscription();
         return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
     }
+
+    @PostMapping("/accept-subscription")
+    public ResponseEntity<String> accept_subscription(@RequestParam String subscriptionCode) {
+        boolean success = subscriptionService.acceptsubcribed(subscriptionCode);
+        return success ? ResponseEntity.ok("Successfully Accept Subscription") :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body("Accept Subscription failed: Subscription not found");
+    }
+
 }
