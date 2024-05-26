@@ -1,0 +1,45 @@
+<!-- my-subscription.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subscriptions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <h1>My Subscriptions</h1>
+    <a href="index.html" class="my-subscription-button">Home</a> <!-- Ensure this link points back to the main page -->
+    <button id="pending-subscription-button" class="my-subscription-button">Admin Acc</button>
+</header>
+<main>
+    <div class="filter-container">
+        <label for="status-filter">Filter Status:</label>
+        <select id="status-filter">
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Subscribed">Subscribed</option>
+        </select>
+        <button id="filter-button">Apply Filter</button>
+    </div>
+    <table id="subscription-table">
+        <thead>
+        <tr>
+            <th>Box Name</th>
+            <th>Type</th>
+            <th>Subscription Code</th>
+            <th>Status</th>
+            <th>Price</th>  <!-- New column header -->
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</main>
+<link rel="stylesheet" href="my-subscriptions.css">
+<script src="my-subscriptions.js"></script>
+</body>
+</html>

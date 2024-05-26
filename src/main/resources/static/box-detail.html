@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Details</title>
+    <link rel="stylesheet" href="box-detail.css">
+</head>
+<body>
+<header>
+    <h1 id="box-name">Box Name</h1>
+</header>
+<main>
+    <p id="box-description">Description: </p>
+    <p id="box-price">Price: </p>
+    <ul id="item-list"></ul>
+    <select id="subscription-type">
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="semi-annual">Semi-Annual</option>
+    </select>
+    <button id="subscribe-button">Subscribe</button>
+    <button id="my-subscription-button" style="display: none;" onclick="window.location.href='my-subscription.html'">My Subscription</button>
+    <p id="message"></p>
+    <button onclick="window.history.back()">Go Back</button>
+</main>
+<script src="box-detail.js"></script>
+</body>
+</html>

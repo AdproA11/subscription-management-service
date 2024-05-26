@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  subsbox:
+    image: ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - "80:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=${JDBC_DATABASE_URL}
+      - SPRING_DATASOURCE_USERNAME=${JDBC_DATABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${JDBC_DATABASE_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:9.5.2
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
