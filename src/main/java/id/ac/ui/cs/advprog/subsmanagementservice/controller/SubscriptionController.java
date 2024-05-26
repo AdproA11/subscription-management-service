@@ -72,4 +72,9 @@ public class SubscriptionController {
                         ? ResponseEntity.noContent().build()
                         : ResponseEntity.ok(subscriptions));
     }
+    @GetMapping("/user-subscriptions-pending")
+    public ResponseEntity<List<SubscriptionDetail>> getSubscriptionPending() {
+        List<SubscriptionDetail> subscriptions = subscriptionService.getPendingSubscription();
+        return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
+    }
 }
