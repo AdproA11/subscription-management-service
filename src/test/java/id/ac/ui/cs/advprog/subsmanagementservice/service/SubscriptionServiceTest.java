@@ -13,14 +13,15 @@ import org.mockito.Mock;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class SubscriptionServiceTest {
 
@@ -123,6 +124,30 @@ class SubscriptionServiceTest {
     }
 
     @Test
+    public void testGetSubscriptionByStatusIsTrue() throws Exception {
+        // Mock repository behavior
+        Subscription subscription1 = new Subscription();
+        subscription1.setSubscriptionCode("MTH-ABC123");
+        subscription1.setOwnerUsername("1");
+        subscription1.setBoxId(1L);
+        subscription1.setType("monthly");
+        subscription1.setStatus("Pending");
+        when(subRepo.findByStatus("Pending")).thenReturn(List.of(subscription1));
+
+        SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
+        when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
+
+        // Call the asynchronous service method
+        CompletableFuture<List<SubscriptionDetail>> resultFuture = subscriptionService.getSubscriptionByStatusAsync("Pending");
+
+        // Wait for the future to complete and get the result
+        List<SubscriptionDetail> result = resultFuture.get();
+
+        // Assert the status of the first result
+        assertEquals("Pending", result.get(0).getStatus());
+    }
+
+    @Test
     public void testGetSubscriptionByStatusIsValid() throws Exception {
         // Mock repository behavior
         Subscription subscription1 = new Subscription();
@@ -155,26 +180,33 @@ class SubscriptionServiceTest {
     }
 
     @Test
-    public void testGetSubscriptionByStatusIsTrue() throws Exception {
-        // Mock repository behavior
+    void testGetPendingSubscription() {
+        // Given
         Subscription subscription1 = new Subscription();
         subscription1.setSubscriptionCode("MTH-ABC123");
         subscription1.setOwnerUsername("1");
         subscription1.setBoxId(1L);
         subscription1.setType("monthly");
         subscription1.setStatus("Pending");
-        when(subRepo.findByStatus("Pending")).thenReturn(List.of(subscription1));
 
         SubscriptionBox box = new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0);
         when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
 
-        // Call the asynchronous service method
-        CompletableFuture<List<SubscriptionDetail>> resultFuture = subscriptionService.getSubscriptionByStatusAsync("Pending");
+        when(subRepo.findByStatus("Pending")).thenReturn(Arrays.asList(subscription1));
 
-        // Wait for the future to complete and get the result
-        List<SubscriptionDetail> result = resultFuture.get();
+        // When
+        List<SubscriptionDetail> result = subscriptionService.getPendingSubscription();
 
-        // Assert the status of the first result
-        assertEquals("Pending", result.get(0).getStatus());
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("MTH-ABC123", result.get(0).getSubscriptionCode());
+        assertEquals("1", result.get(0).getOwnerUsername());
+        assertEquals("Real Madrid Box", result.get(0).getBoxName());
+        assertEquals(9.0, result.get(0).getTotal()); // assuming a 10% discount for monthly subscriptions
+
+        // Verify interactions
+        verify(subRepo, times(1)).findByStatus("Pending");
+        verify(boxRepo, times(1)).findById(1L);
     }
 }
