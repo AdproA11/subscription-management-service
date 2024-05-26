@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
-public class SubscriptionBoxService {
+public class SubscriptionBoxService implements SubscriptionBoxServiceInterface {
     @Autowired
     private SubscriptionBoxRepository boxRepo;
     @Autowired
