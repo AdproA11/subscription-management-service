@@ -1,9 +1,7 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.service;
 
 import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundException;
-import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
-import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
-import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionDetail;
+import id.ac.ui.cs.advprog.subsmanagementservice.model.*;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import java.util.List;
@@ -197,5 +196,115 @@ class SubscriptionServiceTest {
         boolean result = subscriptionService.acceptsubcribed(subscriptionCode);
 
         assertEquals(false, result);
+    }
+    @Test
+    public void testCreateSubscriptionType() {
+        String baseCode = UUID.randomUUID().toString();
+
+        SubscriptionType monthly = subscriptionService.createSubscriptionType("monthly", baseCode);
+        assertInstanceOf(MonthlySubscription.class, monthly);
+
+        SubscriptionType quarterly = subscriptionService.createSubscriptionType("quarterly", baseCode);
+        assertInstanceOf(QuarterlySubscription.class, quarterly);
+
+        SubscriptionType semiAnnual = subscriptionService.createSubscriptionType("semi-annual", baseCode);
+        assertInstanceOf(SemiAnnualSubscription.class, semiAnnual);
+
+        SubscriptionType basic = subscriptionService.createSubscriptionType("other", baseCode);
+        assertInstanceOf(BasicSubscription.class, basic);
+    }
+
+    @Test
+    public void testUpdateSubscriptionStatus() {
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionCode("code");
+        subscription.setStatus("Active");
+
+        when(subRepo.findBySubscriptionCode("code")).thenReturn(subscription);
+
+        boolean result = subscriptionService.updateSubscriptionStatus("code", "Cancelled");
+        assertTrue(result);
+        assertEquals("Cancelled", subscription.getStatus());
+        verify(subRepo, times(1)).save(subscription);
+
+        when(subRepo.findBySubscriptionCode("invalid_code")).thenReturn(null);
+        result = subscriptionService.updateSubscriptionStatus("invalid_code", "Cancelled");
+        assertFalse(result);
+    }
+
+    @Test
+    public void testMapSubscriptionsToDetails() {
+        Subscription subscription1 = new Subscription();
+        subscription1.setBoxId(1L);
+        subscription1.setSubscriptionCode("code1");
+        subscription1.setOwnerUsername("user1");
+        subscription1.setType("monthly");
+        subscription1.setStatus("Active");
+
+        Subscription subscription2 = new Subscription();
+        subscription2.setBoxId(2L);
+        subscription2.setSubscriptionCode("code2");
+        subscription2.setOwnerUsername("user2");
+        subscription2.setType("quarterly");
+        subscription2.setStatus("Pending");
+
+        List<Subscription> subscriptions = Arrays.asList(subscription1, subscription2);
+
+        SubscriptionBox box1 = new SubscriptionBox();
+        box1.setId(1L);
+        box1.setName("Box1");
+        box1.setPrice(100.0);
+
+        SubscriptionBox box2 = new SubscriptionBox();
+        box2.setId(2L);
+        box2.setName("Box2");
+        box2.setPrice(200.0);
+
+        when(boxRepo.findById(1L)).thenReturn(Optional.of(box1));
+        when(boxRepo.findById(2L)).thenReturn(Optional.of(box2));
+
+        List<SubscriptionDetail> details = subscriptionService.mapSubscriptionsToDetails(subscriptions);
+
+        assertEquals(2, details.size());
+
+        SubscriptionDetail detail1 = details.get(0);
+        assertEquals("code1", detail1.getSubscriptionCode());
+        assertEquals("user1", detail1.getOwnerUsername());
+        assertEquals("Box1", detail1.getBoxName());
+        assertEquals("monthly", detail1.getType());
+        assertEquals("Active", detail1.getStatus());
+
+        SubscriptionDetail detail2 = details.get(1);
+        assertEquals("code2", detail2.getSubscriptionCode());
+        assertEquals("user2", detail2.getOwnerUsername());
+        assertEquals("Box2", detail2.getBoxName());
+        assertEquals("quarterly", detail2.getType());
+        assertEquals("Pending", detail2.getStatus());
+    }
+
+    @Test
+    public void testMapSubscriptionToDetail() {
+        Subscription subscription = new Subscription();
+        subscription.setBoxId(1L);
+        subscription.setSubscriptionCode("code1");
+        subscription.setOwnerUsername("user1");
+        subscription.setType("monthly");
+        subscription.setStatus("Active");
+
+        SubscriptionBox box = new SubscriptionBox();
+        box.setId(1L);
+        box.setName("Box1");
+        box.setPrice(100.0);
+
+        when(boxRepo.findById(1L)).thenReturn(Optional.of(box));
+
+        SubscriptionDetail detail = subscriptionService.mapSubscriptionToDetail(subscription);
+
+        assertEquals("code1", detail.getSubscriptionCode());
+        assertEquals("user1", detail.getOwnerUsername());
+        assertEquals("Box1", detail.getBoxName());
+        assertEquals("monthly", detail.getType());
+        assertEquals("Active", detail.getStatus());
+        assertEquals(90.0, detail.getTotal(), 0.01); // Assuming no discounts applied for simplicity
     }
 }
