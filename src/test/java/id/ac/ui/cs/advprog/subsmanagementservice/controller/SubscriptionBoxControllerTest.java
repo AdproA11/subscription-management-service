@@ -173,4 +173,27 @@ class SubscriptionControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subscriptions, responseEntity.getBody());
     }
+
+    @Test
+    void accept_subcription_failed() {
+        String subscriptionCode = "non-existent-id";
+        when(subscriptionService.acceptsubcribed(subscriptionCode)).thenReturn(false);
+
+        ResponseEntity<String> responseEntity = subscriptionController.accept_subscription(subscriptionCode);
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals("Accept Subscription failed: Subscription not found", responseEntity.getBody());
+    }
+
+    @Test
+    void accept_subcription_success() {
+        String subscriptionCode = "MTH-ABC123";
+        when(subscriptionService.acceptsubcribed(subscriptionCode)).thenReturn(true);
+
+        ResponseEntity<String> responseEntity = subscriptionController.accept_subscription(subscriptionCode);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Successfully Accept Subscription", responseEntity.getBody());
+    }
+
 }
