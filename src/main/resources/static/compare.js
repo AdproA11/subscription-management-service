@@ -4,7 +4,7 @@ function fetchBoxDetails() {
     const urlParams = new URLSearchParams(window.location.search);
     const boxId = urlParams.get('boxId');
 
-    fetch(`/api/subscriptions/${boxId}`)
+    fetch(`/api/subscription-box/${boxId}`)
         .then(handleResponse)
         .then(box => updateBoxDetails(box))
         .catch(error => {

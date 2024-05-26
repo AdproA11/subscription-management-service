@@ -1,6 +1,6 @@
 // Display All box
 function fetchAllBoxes() {
-    const url = '/api/subscriptions/all';
+    const url = '/api/subscription-box/all';
 
     fetch(url)
         .then(response => {
@@ -39,7 +39,7 @@ function fetchBoxes() {
     const minPrice = minPriceInput ? parseFloat(minPriceInput) : 0;
     const maxPrice = maxPriceInput ? parseFloat(maxPriceInput) : 15000000;
 
-    let url = '/api/subscriptions';
+    let url = '/api/subscription-box';
     const params = new URLSearchParams();
 
     if (keywords) params.append('keywords', keywords);

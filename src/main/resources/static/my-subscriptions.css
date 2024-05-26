@@ -32,3 +32,31 @@ button {
 button:hover {
     background-color: #ff0000;
 }
+
+/* styles.css */
+.my-subscription-button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.my-subscription-button:focus {
+    outline: none;
+}
+
+.green-button {
+    background-color: #28a745; /* Green color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.green-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+

@@ -5,7 +5,7 @@ function fetchBoxDetails() {
     const boxId = urlParams.get('boxId');
     const userId = '1'; // Simulated user ID, replace with dynamic session ID as needed.
 
-    fetch(`/api/subscriptions/${boxId}`)
+    fetch(`/api/subscription-box/${boxId}`)
         .then(handleResponse)
         .then(box => {
             updateBoxDetails(box);
