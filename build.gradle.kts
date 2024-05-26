@@ -91,7 +91,7 @@ tasks.jacocoTestReport {
 // SonarQube configuration
 sonarqube {
     properties {
-        property("sonar.projectKey", "adproa11")
+        property("sonar.projectKey", "AdproA11_subscription-management-service")
         property("sonar.organization", "AdproA11")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.login", System.getenv("SONAR_TOKEN"))
