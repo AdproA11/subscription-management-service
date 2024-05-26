@@ -3,6 +3,7 @@ plugins {
     jacoco
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.sonarqube") version "4.3.0.3225" // Ensure this is the latest version available
 }
 
 group = "id.ac.ui.cs.advprog"
@@ -41,7 +42,8 @@ dependencies {
     testImplementation("com.h2database:h2")
 }
 
-//dependencyManagement {
+// Uncomment if needed for Spring Cloud dependency management
+// dependencyManagement {
 //    imports {
 //        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
 //    }
@@ -83,5 +85,15 @@ tasks.jacocoTestReport {
         xml.required.set(true)
         csv.required.set(true)
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+// SonarQube configuration
+sonarqube {
+    properties {
+        property("sonar.projectKey", "adproa11")
+        property("sonar.organization", "AdproA11")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN"))
     }
 }
