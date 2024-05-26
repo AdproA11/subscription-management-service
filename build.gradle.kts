@@ -92,8 +92,7 @@ tasks.jacocoTestReport {
 sonarqube {
     properties {
         property("sonar.projectKey", "AdproA11_subscription-management-service")
-        property("sonar.organization", "AdproA11") // Ensure the organization name is correct
+        property("sonar.organization", "adproa11")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", System.getenv("SONAR_TOKEN"))
     }
 }
