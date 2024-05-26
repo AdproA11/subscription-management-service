@@ -1,14 +1,9 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.service;
 
-import id.ac.ui.cs.advprog.subsmanagementservice.handler.ResourceNotFoundException;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.*;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionBoxRepository;
 import id.ac.ui.cs.advprog.subsmanagementservice.repository.SubscriptionRepository;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

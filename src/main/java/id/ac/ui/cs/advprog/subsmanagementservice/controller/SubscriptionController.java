@@ -19,6 +19,7 @@ public class SubscriptionController {
     @Autowired
     private SubscriptionService subscriptionService;
 
+
     @PostMapping("/{id}/subscribe")
     public ResponseEntity<Subscription> subscribe(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
         try {

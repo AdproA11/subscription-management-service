@@ -1,8 +1,6 @@
 package id.ac.ui.cs.advprog.subsmanagementservice.controller;
 
-import id.ac.ui.cs.advprog.subsmanagementservice.model.Subscription;
 import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionBox;
-import id.ac.ui.cs.advprog.subsmanagementservice.model.SubscriptionDetail;
 import id.ac.ui.cs.advprog.subsmanagementservice.service.SubscriptionBoxService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -20,6 +17,12 @@ public class SubscriptionBoxController {
     private SubscriptionBoxService subscriptionBoxService;
 
     @GetMapping("/all")
+    public ResponseEntity<List<SubscriptionBox>> getAllSubscriptionBoxes() {
+        List<SubscriptionBox> boxes = subscriptionBoxService.getAllBoxes();
+        return ResponseEntity.ok(boxes);
+    }
+
+    @GetMapping("/all-async")
     public CompletableFuture<ResponseEntity<List<SubscriptionBox>>> getAllSubscriptionBoxesAsync() {
         return subscriptionBoxService.getAllBoxesAsync()
                 .thenApply(ResponseEntity::ok);

@@ -1,6 +1,6 @@
 // Display All box
 function fetchAllBoxes() {
-    const url = '/api/subscription-box/all';
+    const url = '/api/subscription-box/all-async';
 
     fetch(url)
         .then(response => {

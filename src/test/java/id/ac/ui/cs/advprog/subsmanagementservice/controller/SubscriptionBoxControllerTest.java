@@ -37,7 +37,7 @@ class SubscriptionBoxControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 // sementara comment dulu ampe udah konek sama service box-item management
-/*    @Test
+   @Test
     void getAllSubscriptionBoxesAsync() throws Exception {
         List<SubscriptionBox> subscriptionBoxTests = new ArrayList<>();
         subscriptionBoxTests.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0));
@@ -45,14 +45,14 @@ class SubscriptionBoxControllerTest {
 
         CompletableFuture<List<SubscriptionBox>> futureSubscriptionBoxes = CompletableFuture.completedFuture(subscriptionBoxTests);
 
-        when(subscriptionService.getAllBoxesAsync()).thenReturn(futureSubscriptionBoxes);
+        when(subscriptionBoxService.getAllBoxesAsync()).thenReturn(futureSubscriptionBoxes);
 
-        CompletableFuture<ResponseEntity<List<SubscriptionBox>>> responseEntityFuture = subscriptionController.getAllSubscriptionBoxesAsync();
+        CompletableFuture<ResponseEntity<List<SubscriptionBox>>> responseEntityFuture = subscriptionBoxController.getAllSubscriptionBoxesAsync();
         ResponseEntity<List<SubscriptionBox>> responseEntity = responseEntityFuture.get(); // blocking call to get the result
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(subscriptionBoxTests, responseEntity.getBody());
-    }*/
+    }
 
     @Test
     void getSubscriptionBoxDetails() {

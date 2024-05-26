@@ -12,8 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,13 +47,13 @@ class SubscriptionBoxServiceTest {
     }
 
     // sementara comment dulu ampe udah konek sama service box-item management
-/*    @Test
+    @Test
     void getAllBoxesAsync() throws Exception {
         List<SubscriptionBox> subscriptionBoxes = new ArrayList<>();
         subscriptionBoxes.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 10.0));
         subscriptionBoxes.add(new SubscriptionBox("Real Madrid Box", "Real Madrid Sub Box", 20.0));
 
-        String url = "http://localhost:8081/api/box/all";
+        String url = "http://34.126.126.9/api/subscription-box/all";
         ResponseEntity<List<SubscriptionBox>> responseEntity = ResponseEntity.ok(subscriptionBoxes);
 
         when(restTemplate.exchange(
@@ -59,7 +63,7 @@ class SubscriptionBoxServiceTest {
                 any(ParameterizedTypeReference.class))
         ).thenReturn(responseEntity);
 
-        CompletableFuture<List<SubscriptionBox>> futureResult = subscriptionService.getAllBoxesAsync();
+        CompletableFuture<List<SubscriptionBox>> futureResult = subscriptionBoxService.getAllBoxesAsync();
         List<SubscriptionBox> result = futureResult.get(); // blocking call to get the result for consistency
 
 
@@ -67,7 +71,7 @@ class SubscriptionBoxServiceTest {
         assertEquals(subscriptionBoxes, result);
 
         verify(boxRepo, times(1)).saveAll(subscriptionBoxes);
-    }*/
+    }
 
     @Test
     void findBoxById_ResourceNotFoundException() {

@@ -27,10 +27,15 @@ public class SubscriptionBoxService implements SubscriptionBoxServiceInterface {
     @Autowired
     private RestTemplate restTemplate;
 
+
+    public List<SubscriptionBox> getAllBoxes() {
+        return boxRepo.findAll();
+    }
+
     @Async
     public CompletableFuture<List<SubscriptionBox>> getAllBoxesAsync() {
         return CompletableFuture.supplyAsync(() -> {
-            String url = "http://localhost:8081/api/box/all";
+            String url = "http://34.126.126.9/api/subscription-box/all";
             ResponseEntity<List<SubscriptionBox>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
